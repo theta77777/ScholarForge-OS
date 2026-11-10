@@ -90,17 +90,24 @@ pip install -r requirements.txt
 ```
 *(Optional: If `typst` is needed for vector PDF compilation: `pip install typst`)*
 
-### 3. Configure Settings
-Configure your API keys in `config/settings.json` or via the in-app **BYOK Vault** modal:
-```json
-{
-  "gemini_api_key": "YOUR_GEMINI_API_KEY",
-  "workspace_dir": "./workspace",
-  "enable_jev": true
-}
+### 3. Configure Credentials (.env)
+Copy the example environment file and add your `GEMINI_API_KEY`:
+```bash
+cp .env.example .env
 ```
+*(Your `.env` file is gitignored and will never be committed to public repositories).*
 
 ### 4. Launch ScholarForge OS
+
+#### Option A: Native Desktop Application (Electron)
+Launch as a standalone native desktop research workbench:
+```bash
+npm start
+# Or double-click launch_desktop.bat on Windows
+```
+The Electron runner automatically manages the local Python server lifecycle and opens the studio in a dedicated desktop window.
+
+#### Option B: Web Browser Mode
 ```bash
 python run_server.py
 ```

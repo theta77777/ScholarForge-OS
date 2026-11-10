@@ -1,0 +1,23 @@
+{
+  "name": "scholarforge-os",
+  "version": "2.2.0",
+  "description": "Autonomous PhD-Grade Scientific Review Paper Engine & Desktop Research Workbench",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "desktop": "electron .",
+    "server": "python run_server.py"
+  },
+  "keywords": [
+    "scientific-research",
+    "literature-review",
+    "systematic-review",
+    "academic-writing",
+    "electron-app"
+  ],
+  "author": "ScholarForge Consortium",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^33.2.0"
+  }
+}
