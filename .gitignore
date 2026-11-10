@@ -15,7 +15,10 @@ venv/
 env/
 ENV/
 
-# Local sensitive configuration and runtime database
+# Local sensitive configuration, environment keys, and runtime database
+.env
+.env.local
+.env.*.local
 config/settings.json
 config/cache.db
 

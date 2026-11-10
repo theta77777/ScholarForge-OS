@@ -82,7 +82,7 @@ class GeminiClient:
         config = types.GenerateContentConfig(**config_params)
 
         candidate_models = [self.model_name]
-        for fallback in ["gemini-3.5-flash", "gemini-3.1-flash-lite"]:
+        for fallback in ["gemini-flash-lite-latest", "gemini-3-flash-preview", "gemini-flash-latest"]:
             if fallback not in candidate_models:
                 candidate_models.append(fallback)
 
@@ -130,18 +130,34 @@ DIRECTIVE:
         return await self.generate_structured_json(full_prompt)
 
     async def generate_text(self, prompt: str, system_instruction: Optional[str] = None) -> str:
-        """High-speed text generation without search grounding for drafting sections."""
+        """High-speed text generation with automatic fallback cascade for drafting sections."""
         import asyncio
         await rate_limiter.acquire("gemini")
         config = types.GenerateContentConfig(system_instruction=system_instruction) if system_instruction else None
-        def _call():
-            return self.client.models.generate_content(
-                model=self.model_name,
-                contents=prompt,
-                config=config
-            )
-        response = await asyncio.to_thread(_call)
-        return response.text or ""
+        
+        candidate_models = [self.model_name]
+        for fallback in ["gemini-flash-lite-latest", "gemini-3-flash-preview", "gemini-flash-latest"]:
+            if fallback not in candidate_models:
+                candidate_models.append(fallback)
+
+        last_err = None
+        for model in candidate_models:
+            try:
+                def _call():
+                    return self.client.models.generate_content(
+                        model=model,
+                        contents=prompt,
+                        config=config
+                    )
+                response = await asyncio.wait_for(asyncio.to_thread(_call), timeout=45.0)
+                return response.text or ""
+            except Exception as e:
+                last_err = e
+                continue
+
+        if last_err:
+            raise last_err
+        return ""
 
     async def ingest_pdf_direct(self, pdf_path: Path, extraction_prompt: str) -> str:
         """

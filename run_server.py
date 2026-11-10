@@ -4,9 +4,18 @@ import sys
 from pathlib import Path
 
 # Add project root to sys.path
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+root_dir = Path(__file__).resolve().parent
+sys.path.insert(0, str(root_dir))
 
-PORT = int(os.environ.get("SCHOLARFORGE_PORT", 8008))
+# Automatically load local .env credentials
+try:
+    from dotenv import load_dotenv
+    load_dotenv(root_dir / ".env")
+except ImportError:
+    pass
+
+PORT = int(os.environ.get("SCHOLARFORGE_PORT", os.environ.get("PORT", 8008)))
+HOST = os.environ.get("HOST", "127.0.0.1")
 
 if __name__ == "__main__":
     print("=" * 60)
@@ -14,4 +23,4 @@ if __name__ == "__main__":
     print(f"API Endpoint: http://localhost:{PORT}")
     print(f"Documentation & OpenAPI: http://localhost:{PORT}/docs")
     print("=" * 60)
-    uvicorn.run("scholarforge.api.main:app", host="127.0.0.1", port=PORT, reload=False)
+    uvicorn.run("scholarforge.api.main:app", host=HOST, port=PORT, reload=False)

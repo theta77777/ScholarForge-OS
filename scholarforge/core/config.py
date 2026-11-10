@@ -8,6 +8,17 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 CONFIG_DIR = PROJECT_ROOT / "config"
 SETTINGS_FILE = CONFIG_DIR / "settings.json"
 
+# Load local .env file automatically
+try:
+    from dotenv import load_dotenv
+    env_file = PROJECT_ROOT / ".env"
+    if env_file.exists():
+        load_dotenv(dotenv_path=env_file, override=True)
+    else:
+        load_dotenv()
+except ImportError:
+    pass
+
 class ModelSettings(BaseModel):
     default_workhorse: str = "gemini-3.8-flash"
     flash_thinking_budget: str = "high"  # "high", "medium", "off"
@@ -66,7 +77,7 @@ class ScholarForgeConfig(BaseModel):
 def get_settings() -> ScholarForgeConfig:
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
     
-    # Fallback to env vars if settings.json does not exist
+    # Read API keys and preferences from environment / .env
     gemini_key = os.environ.get("GEMINI_API_KEY", "")
     
     if not SETTINGS_FILE.exists():
@@ -78,8 +89,37 @@ def get_settings() -> ScholarForgeConfig:
         with open(SETTINGS_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
         cfg = ScholarForgeConfig(**data)
-        if not cfg.gemini_api_key and gemini_key:
+        
+        # Prefer environment variable if present, or fill if empty
+        if gemini_key:
             cfg.gemini_api_key = gemini_key
+
+        # Sync API vault keys from environment / .env
+        vault_mapping = [
+            ("NCBI_API_KEY", "ncbi_api_key"),
+            ("CORE_API_KEY", "core_api_key"),
+            ("SERPAPI_KEY", "serpapi_key"),
+            ("SCITE_API_KEY", "scite_api_key"),
+            ("GROQ_API_KEY", "groq_api_key"),
+            ("OPENROUTER_API_KEY", "openrouter_api_key"),
+            ("CEREBRAS_API_KEY", "cerebras_api_key"),
+            ("DEEPL_API_KEY", "deepl_api_key"),
+            ("ZENODO_TOKEN", "zenodo_token"),
+            ("MATERIALS_PROJECT_KEY", "materials_project_key"),
+        ]
+        for env_k, vault_attr in vault_mapping:
+            val = os.environ.get(env_k)
+            if val:
+                setattr(cfg.api_vault, vault_attr, val)
+
+        openai_k = os.environ.get("OPENAI_API_KEY")
+        if openai_k:
+            cfg.models.openai_api_key = openai_k
+
+        default_workhorse = os.environ.get("DEFAULT_WORKHORSE")
+        if default_workhorse:
+            cfg.models.default_workhorse = default_workhorse
+
         return cfg
     except Exception as e:
         print(f"[Warning] Failed loading settings.json ({e}), creating defaults.")
