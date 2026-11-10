@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, shell, dialog } = require('electron');
+const { app, BrowserWindow, Menu, shell, dialog, ipcMain } = require('electron');
 const path = require('path');
 const http = require('http');
 const { spawn } = require('child_process');
@@ -82,6 +82,7 @@ function createMainWindow() {
     backgroundColor: '#020617', // Match Obsidian Slate theme
     show: false,
     webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
       spellcheck: true
@@ -110,6 +111,27 @@ function createMainWindow() {
     mainWindow = null;
   });
 }
+
+// Native IPC Dialog Handlers
+ipcMain.handle('select-storage-folder', async () => {
+  if (!mainWindow) return null;
+  const result = await dialog.showOpenDialog(mainWindow, {
+    title: 'Select Project Storage Folder in Windows Storage',
+    properties: ['openDirectory', 'createDirectory']
+  });
+  if (result.canceled || !result.filePaths || result.filePaths.length === 0) {
+    return null;
+  }
+  return result.filePaths[0];
+});
+
+ipcMain.handle('open-path', async (event, targetPath) => {
+  if (targetPath) {
+    await shell.openPath(targetPath);
+    return true;
+  }
+  return false;
+});
 
 function buildAppMenu() {
   const isMac = process.platform === 'darwin';
@@ -239,3 +261,4 @@ app.on('window-all-closed', () => {
     app.quit();
   }
 });
+

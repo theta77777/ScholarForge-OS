@@ -144,21 +144,27 @@ def slugify_title(text: str) -> str:
 def get_active_workspace(custom_path: Optional[str] = None) -> Path:
     """
     Resolves the active review project workspace.
-    Prioritizes explicit paths, then configured active_project, then existing projects with 00_project.
+    Prioritizes explicit paths, then configured active_project (absolute or relative),
+    then existing projects with 00_project.
     """
     if custom_path:
         p = Path(custom_path)
         if p.exists():
             return p
     cfg = get_settings()
-    root = Path(cfg.workspace_dir)
-    root.mkdir(parents=True, exist_ok=True)
     
-    # 1. Check configured active_project
+    # 1. Check configured active_project (supports absolute path or workspace slug)
     if cfg.active_project:
+        p_direct = Path(cfg.active_project)
+        if p_direct.is_absolute() and p_direct.exists():
+            return p_direct
+        root = Path(cfg.workspace_dir)
         p = root / cfg.active_project
         if (p / "00_project").exists() or p.exists():
             return p
+
+    root = Path(cfg.workspace_dir)
+    root.mkdir(parents=True, exist_ok=True)
             
     # 2. Check any user project folder (sorted by most recently modified)
     user_projects = []
@@ -223,8 +229,54 @@ def list_all_projects() -> list:
                 "review_type": review_type,
                 "status": status,
                 "word_count": word_count,
-                "is_active": (d.name == cfg.active_project),
+                "is_active": (d.name == cfg.active_project or str(d) == cfg.active_project),
                 "path": str(d)
+            })
+
+    # Check if active_project is a custom directory outside workspace_dir
+    if cfg.active_project:
+        p_act = Path(cfg.active_project)
+        if p_act.is_absolute() and p_act.exists() and not any(p["path"] == str(p_act) for p in projects):
+            brief_file = p_act / "00_project" / "project_brief.md"
+            state_file = p_act / "00_project" / "STATE.md"
+            title = p_act.name.replace("_", " ").title()
+            review_type = "Narrative"
+            status = "Initialized"
+            if brief_file.exists():
+                try:
+                    txt = brief_file.read_text(encoding="utf-8")
+                    t_match = re.search(r"# Project Brief:\s*(.*)", txt)
+                    if t_match:
+                        title = t_match.group(1).strip()
+                    r_match = re.search(r"- \*\*Review Type\*\*:\s*(.*)", txt)
+                    if r_match:
+                        review_type = r_match.group(1).strip()
+                except Exception:
+                    pass
+            if state_file.exists():
+                try:
+                    txt = state_file.read_text(encoding="utf-8")
+                    s_match = re.search(r"- \*\*Current Phase\*\*:\s*(.*)", txt)
+                    if s_match:
+                        status = f"Phase {s_match.group(1).strip()}"
+                except Exception:
+                    pass
+            word_count = 0
+            manuscript_file = p_act / "06_manuscript" / "manuscript.md"
+            if manuscript_file.exists():
+                try:
+                    words = manuscript_file.read_text(encoding="utf-8").split()
+                    word_count = len(words)
+                except Exception:
+                    pass
+            projects.insert(0, {
+                "slug": p_act.name,
+                "title": title,
+                "review_type": review_type,
+                "status": status,
+                "word_count": word_count,
+                "is_active": True,
+                "path": str(p_act)
             })
     return projects
 

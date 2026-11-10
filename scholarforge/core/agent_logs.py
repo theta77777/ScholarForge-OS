@@ -34,3 +34,72 @@ class AgentLogger:
     def clear(cls):
         cls._logs.clear()
 
+
+class TaskProgressTracker:
+    """
+    Tracks and broadcasts real-time percentage progress (0-100%) and live task execution telemetry
+    across Steps 1 to 4 and the autonomous pipeline.
+    """
+    _state: Dict[str, Any] = {
+        "active": False,
+        "task_name": "Idle",
+        "step": 0,
+        "total_steps": 4,
+        "percentage": 0,
+        "message": "Ready to launch research pipeline",
+        "timestamp": "",
+        "start_time": 0
+    }
+
+    @classmethod
+    def set_progress(cls, task_name: str, percentage: int, message: str, step: int = 1, total_steps: int = 4):
+        now = time.time()
+        start = cls._state.get("start_time") or now
+        cls._state = {
+            "active": True,
+            "task_name": task_name,
+            "step": step,
+            "total_steps": total_steps,
+            "percentage": max(0, min(100, int(percentage))),
+            "message": message,
+            "timestamp": time.strftime("%H:%M:%S"),
+            "start_time": start,
+            "elapsed_seconds": int(now - start) if start else 0
+        }
+        AgentLogger.log(task_name.upper()[:12], f"[{int(percentage)}%] {message}", "info")
+
+    @classmethod
+    def complete(cls, task_name: str, message: str = "Completed successfully"):
+        start = cls._state.get("start_time") or time.time()
+        cls._state = {
+            "active": False,
+            "task_name": task_name,
+            "step": 4,
+            "total_steps": 4,
+            "percentage": 100,
+            "message": message,
+            "timestamp": time.strftime("%H:%M:%S"),
+            "start_time": 0,
+            "elapsed_seconds": int(time.time() - start) if start else 0
+        }
+        AgentLogger.log(task_name.upper()[:12], f"[100%] {message}", "success")
+
+    @classmethod
+    def get_progress(cls) -> Dict[str, Any]:
+        return cls._state
+
+    @classmethod
+    def reset(cls):
+        cls._state = {
+            "active": False,
+            "task_name": "Idle",
+            "step": 0,
+            "total_steps": 4,
+            "percentage": 0,
+            "message": "Ready to launch research pipeline",
+            "timestamp": time.strftime("%H:%M:%S"),
+            "start_time": 0,
+            "elapsed_seconds": 0
+        }
+
+

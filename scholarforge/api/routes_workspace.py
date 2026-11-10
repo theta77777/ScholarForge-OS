@@ -30,6 +30,17 @@ class CreateWorkspaceRequest(BaseModel):
     target_journal: str = "Nature Reviews"
     run_pipeline: bool = False
 
+class CreateCustomProjectRequest(BaseModel):
+    project_name: str
+    storage_path: Optional[str] = None
+    folder_name: Optional[str] = None
+    review_type: Optional[str] = "systematic"
+    target_journal: Optional[str] = "Nature Reviews"
+    copy_existing_files: Optional[bool] = False
+
+class BrowseDirectoryRequest(BaseModel):
+    initial_dir: Optional[str] = None
+
 class SwitchWorkspaceRequest(BaseModel):
     slug: str
 
@@ -39,6 +50,128 @@ class RunPipelineRequest(BaseModel):
     review_type: str = "systematic"
     target_journal: str = "Nature Reviews"
     slug: Optional[str] = None
+
+@router.post("/browse-directory")
+def browse_storage_directory(req: Optional[BrowseDirectoryRequest] = None):
+    """
+    Launches the native Windows directory picker dialog on the host computer
+    and returns the selected absolute folder path.
+    """
+    init_dir = req.initial_dir if req else None
+    chosen_path = None
+    try:
+        import tkinter as tk
+        from tkinter import filedialog
+        root = tk.Tk()
+        root.withdraw()
+        root.wm_attributes("-topmost", 1)
+        chosen = filedialog.askdirectory(
+            parent=root,
+            initialdir=init_dir or os.getcwd(),
+            title="Select Windows Storage Folder for Review Project"
+        )
+        root.destroy()
+        if chosen:
+            chosen_path = str(Path(chosen).resolve())
+    except Exception as e:
+        AgentLogger.log("BROWSE", f"Tkinter dialog note: {e}, running PowerShell fallback...", "warning")
+
+    if not chosen_path and os.name == 'nt':
+        try:
+            cmd = '[System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null; $f = New-Object System.Windows.Forms.FolderBrowserDialog; $f.ShowNewFolderButton = $true; $f.Description = "Select Project Storage Folder"; if($f.ShowDialog() -eq "OK"){ $f.SelectedPath }'
+            res = subprocess.run(["powershell", "-NoProfile", "-Command", cmd], capture_output=True, text=True, timeout=30)
+            out = res.stdout.strip()
+            if out and Path(out).exists():
+                chosen_path = str(Path(out).resolve())
+        except Exception as e2:
+            AgentLogger.log("BROWSE", f"PowerShell folder dialog note: {e2}", "warning")
+
+    if chosen_path:
+        AgentLogger.log("BROWSE", f"User selected directory: {chosen_path}", "success")
+        return {"status": "success", "selected_path": chosen_path}
+    
+    return {"status": "cancelled", "selected_path": None}
+
+@router.get("/current")
+def get_current_project():
+    """Returns currently active project metadata, absolute path, and storage status."""
+    ws = get_active_workspace()
+    cfg = get_settings()
+    exists = ws.exists()
+    title = ws.name.replace("_", " ").title()
+    brief_file = ws / "00_project" / "project_brief.md"
+    if brief_file.exists():
+        try:
+            import re
+            txt = brief_file.read_text(encoding="utf-8")
+            t_match = re.search(r"# Project Brief:\s*(.*)", txt)
+            if t_match:
+                title = t_match.group(1).strip()
+        except Exception:
+            pass
+    return {
+        "status": "success",
+        "slug": ws.name,
+        "title": title,
+        "workspace_path": str(ws),
+        "exists": exists,
+        "is_custom_path": (ws.parent != Path(cfg.workspace_dir))
+    }
+
+@router.post("/create-custom-project")
+async def create_custom_project(req: CreateCustomProjectRequest):
+    """
+    Creates a new project folder at the specified Windows storage path,
+    initializes the full 9-directory structure, optionally migrates files,
+    and sets it as the active workspace for all operations.
+    """
+    cfg = get_settings()
+    folder = req.folder_name or slugify_title(req.project_name)
+    
+    if req.storage_path and req.storage_path.strip():
+        base = Path(req.storage_path.strip()).resolve()
+        base.mkdir(parents=True, exist_ok=True)
+        if base.name.lower() == folder.lower():
+            target_dir = base
+        else:
+            target_dir = base / folder
+    else:
+        target_dir = Path(cfg.workspace_dir) / folder
+
+    target_dir.mkdir(parents=True, exist_ok=True)
+
+    # Optionally copy current files over if requested
+    if req.copy_existing_files:
+        current_ws = get_active_workspace()
+        if current_ws.resolve() != target_dir.resolve() and current_ws.exists():
+            for item in current_ws.iterdir():
+                if item.name.startswith("."):
+                    continue
+                dest = target_dir / item.name
+                try:
+                    if item.is_dir() and not dest.exists():
+                        shutil.copytree(item, dest)
+                    elif item.is_file() and not dest.exists():
+                        shutil.copy2(item, dest)
+                except Exception as e:
+                    AgentLogger.log("WORKSPACE", f"Note copying {item.name}: {e}", "warning")
+
+    mgr = WorkspaceManager(target_dir)
+    mgr.initialize(
+        title=req.project_name,
+        review_type=req.review_type or "systematic",
+        target_journal=req.target_journal or "Nature Reviews"
+    )
+
+    set_active_project(str(target_dir))
+    AgentLogger.log("WORKSPACE", f"Project folder configured at: {target_dir}", "success")
+
+    return {
+        "status": "success",
+        "slug": target_dir.name,
+        "title": req.project_name,
+        "workspace_path": str(target_dir)
+    }
 
 @router.get("/list")
 def list_projects():
@@ -62,18 +195,26 @@ def list_projects():
 @router.post("/switch")
 def switch_active_project(req: SwitchWorkspaceRequest):
     """
-    Switches the globally active review project.
+    Switches the globally active review project (supports workspace slugs or absolute custom folder paths).
     """
     cfg = get_settings()
-    target_dir = Path(cfg.workspace_dir) / req.slug
+    target_dir = Path(req.slug)
+    if not (target_dir.is_absolute() and target_dir.exists()):
+        target_dir = Path(cfg.workspace_dir) / req.slug
+    if not target_dir.exists():
+        for p in list_all_projects():
+            if p.get("slug") == req.slug or p.get("path") == req.slug:
+                target_dir = Path(p["path"])
+                break
     if not target_dir.exists():
         raise HTTPException(status_code=404, detail=f"Project '{req.slug}' not found.")
     
-    set_active_project(req.slug)
-    AgentLogger.log("WORKSPACE", f"Switched active project to: {req.slug}", "success")
+    slug_val = str(target_dir) if target_dir.parent != Path(cfg.workspace_dir) else req.slug
+    set_active_project(slug_val)
+    AgentLogger.log("WORKSPACE", f"Switched active project to: {target_dir.name} ({target_dir})", "success")
     return {
         "status": "success",
-        "active_slug": req.slug,
+        "active_slug": target_dir.name,
         "workspace_path": str(target_dir)
     }
 
@@ -241,14 +382,39 @@ def open_final_folder(req: Optional[OpenExplorerRequest] = None):
 def get_detailed_workspace_tree(workspace_path: Optional[str] = None):
     """
     Returns full recursive file system tree of the 9 project subfolders with file details.
+    Guarantees all 9 canonical folders are initialized and listed.
     """
     ws = get_active_workspace(workspace_path)
     tree: Dict[str, List[Dict[str, Any]]] = {}
 
-    for d in sorted(ws.iterdir()):
-        if d.is_dir() and not d.name.startswith("."):
-            files = []
-            for f in sorted(d.rglob("*.*")):
+    STANDARD_FOLDERS = [
+        "00_project",
+        "01_search",
+        "02_sources",
+        "03_extraction",
+        "04_analysis",
+        "05_figures_tables",
+        "06_manuscript",
+        "07_quality",
+        "08_final"
+    ]
+
+    # Ensure all 9 standard folders exist
+    for sf in STANDARD_FOLDERS:
+        (ws / sf).mkdir(parents=True, exist_ok=True)
+
+    # Collect standard and any other custom directories
+    all_dirs = set(STANDARD_FOLDERS)
+    if ws.exists():
+        for d in ws.iterdir():
+            if d.is_dir() and not d.name.startswith(".") and not d.name.startswith("_"):
+                all_dirs.add(d.name)
+
+    for d_name in sorted(all_dirs):
+        d_path = ws / d_name
+        files = []
+        if d_path.exists() and d_path.is_dir():
+            for f in sorted(d_path.rglob("*.*")):
                 if not f.name.startswith("."):
                     rel = str(f.relative_to(ws)).replace("\\", "/")
                     ext = f.suffix.lower()
@@ -260,7 +426,7 @@ def get_detailed_workspace_tree(workspace_path: Optional[str] = None):
                     else:
                         size_fmt = f"{size_b / (1024 * 1024):.1f} MB"
                     
-                    is_preview = ext in [".md", ".txt", ".csv", ".json", ".svg", ".py", ".html", ".typ"]
+                    is_preview = ext in [".md", ".txt", ".csv", ".json", ".svg", ".png", ".jpg", ".jpeg", ".py", ".html", ".typ", ".pdf"]
                     files.append({
                         "name": f.name,
                         "relative_path": rel,
@@ -270,7 +436,7 @@ def get_detailed_workspace_tree(workspace_path: Optional[str] = None):
                         "is_previewable": is_preview,
                         "download_url": f"/api/download/{f.name}"
                     })
-            tree[d.name] = files
+        tree[d_name] = files
 
     return {
         "status": "success",
@@ -358,10 +524,15 @@ async def stage_generate_keywords(req: KeywordsRequest):
 @router.post("/stage/search")
 async def stage_run_search(req: StageSearchRequest):
     """Stage 1B: Universal federated and web search returning 100+ verified candidates."""
-    slug = req.slug or slugify_title(req.title)
-    set_active_project(slug)
     cfg = get_settings()
-    root_dir = Path(cfg.workspace_dir) / slug
+    if req.slug:
+        p_cand = Path(req.slug)
+        if p_cand.is_absolute() and p_cand.exists():
+            set_active_project(str(p_cand))
+        else:
+            set_active_project(req.slug)
+    root_dir = get_active_workspace()
+    slug = root_dir.name
     
     orchestrator = AutonomousPipelineOrchestrator(root_dir)
     candidates = await orchestrator.stage_search(
@@ -386,8 +557,7 @@ def stage_deduplicate(req: StageDeduplicateRequest):
     deduped = FederatedSearchEngine.deduplicate_candidates(req.candidates)
     removed_count = original_count - len(deduped)
 
-    cfg = get_settings()
-    root_dir = Path(cfg.workspace_dir) / (req.slug or cfg.active_project or "new_paper")
+    root_dir = get_active_workspace(req.slug)
     cand_file = root_dir / "01_search" / "candidates.csv"
     if cand_file.exists():
         try:
@@ -418,8 +588,7 @@ def stage_organize_candidates(req: StageOrganizeRequest):
     supporting_count = sum(1 for c in organized if c.get("relevance_tier") == "supporting")
     irrelevant_count = sum(1 for c in organized if c.get("relevance_tier") == "irrelevant")
 
-    cfg = get_settings()
-    root_dir = Path(cfg.workspace_dir) / (req.slug or cfg.active_project or "new_paper")
+    root_dir = get_active_workspace(req.slug)
     cand_file = root_dir / "01_search" / "candidates.csv"
     if cand_file.exists():
         try:
@@ -503,11 +672,14 @@ def get_sources_inventory(workspace_path: Optional[str] = None):
 async def stage_run_download(req: StageDownloadRequest):
     """Stage 2: Mass downloads selected candidate items, returning acquired and paywalled lists."""
     if req.slug:
-        set_active_project(req.slug)
-    cfg = get_settings()
-    root_dir = Path(cfg.workspace_dir) / (req.slug or cfg.active_project or "new_paper")
+        p_cand = Path(req.slug)
+        if p_cand.is_absolute() and p_cand.exists():
+            set_active_project(str(p_cand))
+        else:
+            set_active_project(req.slug)
+    root_dir = get_active_workspace(req.slug)
     orchestrator = AutonomousPipelineOrchestrator(root_dir)
-    result = await orchestrator.stage_download(req.candidates, slug=req.slug)
+    result = await orchestrator.stage_download(req.candidates, slug=root_dir.name)
     return {
         "status": "success",
         "slug": root_dir.name,
@@ -518,20 +690,26 @@ async def stage_run_download(req: StageDownloadRequest):
 async def stage_run_extract(req: StageExtractRequest):
     """Stage 3: Layout-aware deep extraction matrix across all downloaded and uploaded files."""
     if req.slug:
-        set_active_project(req.slug)
-    cfg = get_settings()
-    root_dir = Path(cfg.workspace_dir) / (req.slug or cfg.active_project or "new_paper")
+        p_cand = Path(req.slug)
+        if p_cand.is_absolute() and p_cand.exists():
+            set_active_project(str(p_cand))
+        else:
+            set_active_project(req.slug)
+    root_dir = get_active_workspace(req.slug)
     orchestrator = AutonomousPipelineOrchestrator(root_dir)
-    result = await orchestrator.stage_extract(title=req.title, slug=req.slug)
+    result = await orchestrator.stage_extract(title=req.title, slug=root_dir.name)
     return result
 
 @router.post("/stage/draft-section")
 async def stage_draft_section(req: StageDraftSectionRequest):
     """Stage 4A: Drafts section with interactive human steering prompt."""
     if req.slug:
-        set_active_project(req.slug)
-    cfg = get_settings()
-    root_dir = Path(cfg.workspace_dir) / (req.slug or cfg.active_project or "new_paper")
+        p_cand = Path(req.slug)
+        if p_cand.is_absolute() and p_cand.exists():
+            set_active_project(str(p_cand))
+        else:
+            set_active_project(req.slug)
+    root_dir = get_active_workspace(req.slug)
     orchestrator = AutonomousPipelineOrchestrator(root_dir)
     result = await orchestrator.stage_draft_section(
         section_key=req.section_key,
@@ -539,7 +717,7 @@ async def stage_draft_section(req: StageDraftSectionRequest):
         authors=req.authors or "ScholarForge Autonomous Research Consortium",
         user_guidance=req.user_guidance,
         target_journal=req.target_journal or "Nature Reviews",
-        slug=req.slug
+        slug=root_dir.name
     )
     return result
 
@@ -547,15 +725,18 @@ async def stage_draft_section(req: StageDraftSectionRequest):
 async def stage_compile_final(req: StageCompileRequest):
     """Stage 4B: Compiles final Word .docx and Typst .pdf with quality audit."""
     if req.slug:
-        set_active_project(req.slug)
-    cfg = get_settings()
-    root_dir = Path(cfg.workspace_dir) / (req.slug or cfg.active_project or "new_paper")
+        p_cand = Path(req.slug)
+        if p_cand.is_absolute() and p_cand.exists():
+            set_active_project(str(p_cand))
+        else:
+            set_active_project(req.slug)
+    root_dir = get_active_workspace(req.slug)
     orchestrator = AutonomousPipelineOrchestrator(root_dir)
     result = await orchestrator.stage_compile(
         title=req.title,
         authors=req.authors or "ScholarForge Autonomous Research Consortium",
         target_journal=req.target_journal or "Nature Reviews",
-        slug=req.slug,
+        slug=root_dir.name,
         user_guidance=req.user_guidance
     )
     return result

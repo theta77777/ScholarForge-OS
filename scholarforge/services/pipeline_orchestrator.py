@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Dict, Any, List, Optional
 
 from ..core.config import get_settings, slugify_title, set_active_project
-from ..core.agent_logs import AgentLogger
+from ..core.agent_logs import AgentLogger, TaskProgressTracker
 from .workspace_manager import WorkspaceManager
 from .search_engine import FederatedSearchEngine
 from .evidence_extractor import EvidenceExtractor
@@ -47,7 +47,12 @@ class AutonomousPipelineOrchestrator:
             slug = slugify_title(title)
 
         cfg = get_settings()
-        root_dir = Path(cfg.workspace_dir) / slug
+        if self.workspace_path and self.workspace_path.exists():
+            root_dir = self.workspace_path
+        elif cfg.active_project and Path(cfg.active_project).is_absolute() and Path(cfg.active_project).exists():
+            root_dir = Path(cfg.active_project)
+        else:
+            root_dir = Path(cfg.workspace_dir) / slug
         self.workspace_path = root_dir
 
         AgentLogger.log("PIPELINE", f"=== LAUNCHING AUTONOMOUS REVIEW PIPELINE: '{title}' ===", "info")
@@ -56,6 +61,7 @@ class AutonomousPipelineOrchestrator:
         # -------------------------------------------------------------
         # STEP 0: Workspace Directory & State Machine Init + JEV Vectoring
         # -------------------------------------------------------------
+        TaskProgressTracker.set_progress("Pipeline", 5, f"Initializing project workspace and domain profiles for '{title[:35]}...'...", step=1)
         ws_mgr = WorkspaceManager(root_dir)
         ws_mgr.initialize(title=title, review_type=review_type, target_journal=target_journal)
         set_active_project(slug)
@@ -73,6 +79,7 @@ class AutonomousPipelineOrchestrator:
         # -------------------------------------------------------------
         # STEP 1: Federated Search & Candidate Literature Catalog (100+ Papers)
         # -------------------------------------------------------------
+        TaskProgressTracker.set_progress("Pipeline", 20, "Querying federated academic databases across OpenAlex, Europe PMC, and Crossref...", step=1)
         AgentLogger.log("SEARCH", f"Phase 1: Executing large-scale federated search for 100+ verified papers on '{title}'...", "info")
         search_engine = FederatedSearchEngine(root_dir)
         
@@ -114,6 +121,7 @@ class AutonomousPipelineOrchestrator:
         # -------------------------------------------------------------
         # STEP 2: Paper Ingestion & Source Text Extraction
         # -------------------------------------------------------------
+        TaskProgressTracker.set_progress("Pipeline", 40, f"Mass acquiring {len(candidates)} source texts with SHA-256 integrity...", step=2)
         AgentLogger.log("EXTRACTION", f"Phase 2: Ingesting {len(candidates)} papers and extracting layout-aware text corpora...", "info")
         await self._populate_source_texts_and_inventory(root_dir, candidates)
         AgentLogger.log("EXTRACTION", f"Phase 2 Complete: Ingested {len(candidates)} source records with SHA-256 checksums", "success")
@@ -121,6 +129,7 @@ class AutonomousPipelineOrchestrator:
         # -------------------------------------------------------------
         # STEP 3: PICO Extraction Matrix & Claims Ledger
         # -------------------------------------------------------------
+        TaskProgressTracker.set_progress("Pipeline", 60, f"Conducting deep PICO extraction across {len(candidates)} studies...", step=3)
         AgentLogger.log("MATRIX", f"Phase 3: Deep empirical extraction across {len(candidates)} studies...", "info")
         matrix_rows, claims = await self._generate_evidence_matrix_and_claims(root_dir, candidates, title)
         AgentLogger.log("MATRIX", f"Phase 3 Complete: Formulated {len(matrix_rows)} study rows & {len(claims)} verifiable claims", "success")
@@ -128,6 +137,7 @@ class AutonomousPipelineOrchestrator:
         # -------------------------------------------------------------
         # STEP 4: Styled Excel Evidence Workbook & Data Synthesis
         # -------------------------------------------------------------
+        TaskProgressTracker.set_progress("Pipeline", 75, "Generating styled multi-tab Excel evidence workbook...", step=3)
         AgentLogger.log("EXCEL", "Phase 4: Generating styled multi-tab Excel evidence workbook...", "info")
         fig_gen = FigureGenerator(root_dir)
         excel_path = fig_gen.generate_styled_excel_workbook(matrix_rows, claims)
@@ -136,6 +146,7 @@ class AutonomousPipelineOrchestrator:
         # -------------------------------------------------------------
         # STEP 5: Full Manuscript Synthesis, Dynamic Figure Synthesis & Camera-Ready Typesetting
         # -------------------------------------------------------------
+        TaskProgressTracker.set_progress("Pipeline", 88, "Synthesizing thematic review manuscript, 300 DPI figures, Word DOCX & Typst PDF...", step=4)
         AgentLogger.log("SYNTHESIZER", "Phase 5: Synthesizing PhD-grade review manuscript with thematic cross-study synthesis...", "info")
         synthesizer = ManuscriptSynthesizer(root_dir)
         draft_res = await synthesizer.draft_manuscript(
@@ -149,10 +160,12 @@ class AutonomousPipelineOrchestrator:
         # -------------------------------------------------------------
         # STEP 6: Multi-Perspective Quality Audit
         # -------------------------------------------------------------
+        TaskProgressTracker.set_progress("Pipeline", 96, "Running 7-perspective pre-submission quality audit...", step=4)
         AgentLogger.log("AUDIT", "Phase 6: Executing 7-Perspective Pre-Submission Quality Audit Arena...", "info")
         auditor = QualityAuditor(root_dir)
         audit_res = await auditor.run_full_audit(slug=slug)
         AgentLogger.log("AUDIT", f"Phase 6 Complete: Audit finished with {audit_res.get('total_issues', 0)} audit observations", "success")
+        TaskProgressTracker.set_progress("Pipeline", 100, f"Full autonomous review complete: {draft_res.get('word_count', 0)} words compiled!", step=4)
 
         # Update STATE.md
         state_file = root_dir / "00_project" / "STATE.md"
@@ -332,6 +345,8 @@ class AutonomousPipelineOrchestrator:
         extractor = EvidenceExtractor(root)
         matrix_rows = []
         claims = []
+        total_cands = len(candidates)
+        TaskProgressTracker.set_progress("Extraction", 5, f"Starting deep PICO extraction across {total_cands} studies...", step=3)
 
         for i, c in enumerate(candidates):
             cid = c.get("catalog_id", f"C{i+1:03d}")
@@ -353,6 +368,14 @@ class AutonomousPipelineOrchestrator:
                 metadata=c
             )
             data = extracted_res.get("extraction_data", {})
+
+            pct = int(5 + ((i + 1) / max(1, total_cands)) * 85)
+            TaskProgressTracker.set_progress(
+                "Extraction",
+                pct,
+                f"Extracted study [{cid}] {key} ({i+1}/{total_cands}) - {c.get('title', '')[:35]}...",
+                step=3
+            )
 
             key_finding = ""
             locator = "Abstract, Findings"
@@ -427,13 +450,19 @@ class AutonomousPipelineOrchestrator:
         if not slug:
             slug = slugify_title(title)
         cfg = get_settings()
-        root_dir = Path(cfg.workspace_dir) / slug
+        if self.workspace_path and self.workspace_path.exists():
+            root_dir = self.workspace_path
+        elif cfg.active_project and Path(cfg.active_project).is_absolute() and Path(cfg.active_project).exists():
+            root_dir = Path(cfg.active_project)
+        else:
+            root_dir = Path(cfg.workspace_dir) / slug
         self.workspace_path = root_dir
         
         ws_mgr = WorkspaceManager(root_dir)
         ws_mgr.initialize(title=title)
         set_active_project(slug)
 
+        TaskProgressTracker.set_progress("Search", 15, f"Initializing search vectors across academic databases & web for '{title[:40]}...'...", step=1)
         search_engine = FederatedSearchEngine(root_dir)
         candidates = await search_engine.search_all(
             query=title,
@@ -443,6 +472,7 @@ class AutonomousPipelineOrchestrator:
             custom_keywords=custom_keywords
         )
 
+        TaskProgressTracker.set_progress("Search", 85, f"Retrieved {len(candidates)} candidate items. Ranking relevance and compiling catalog...", step=1)
         for i, c in enumerate(candidates):
             if "catalog_id" not in c:
                 c["catalog_id"] = f"C{i+1:03d}"
@@ -463,6 +493,7 @@ class AutonomousPipelineOrchestrator:
                 c["access_status"] = "open_full_text" if c.get("is_oa") else "abstract_only"
 
         self._write_catalog_and_search_log(root_dir, candidates, title)
+        TaskProgressTracker.set_progress("Search", 100, f"Literature discovery complete: {len(candidates)} verified candidate studies cataloged.", step=1)
         return candidates
 
     async def stage_download(
@@ -471,8 +502,8 @@ class AutonomousPipelineOrchestrator:
         slug: Optional[str] = None
     ) -> Dict[str, Any]:
         """Stage 2: Mass downloads selected candidates, returning acquired items and paywalled/missing items."""
-        cfg = get_settings()
-        root_dir = self.workspace_path or Path(cfg.workspace_dir) / (slug or cfg.active_project or "new_paper")
+        from ..core.config import get_active_workspace
+        root_dir = self.workspace_path or get_active_workspace()
         from .literature_downloader import LiteratureDownloader
         downloader = LiteratureDownloader(root_dir)
         result = await downloader.acquire_selected_sources(candidates)
@@ -488,8 +519,8 @@ class AutonomousPipelineOrchestrator:
         slug: Optional[str] = None
     ) -> Dict[str, Any]:
         """Stage 3: Layout-aware deep evidence extraction across all downloaded and user-uploaded sources."""
-        cfg = get_settings()
-        root_dir = self.workspace_path or Path(cfg.workspace_dir) / (slug or cfg.active_project or "new_paper")
+        from ..core.config import get_active_workspace
+        root_dir = self.workspace_path or get_active_workspace()
         if not candidates:
             cand_file = root_dir / "01_search" / "candidates.csv"
             candidates = []
@@ -499,9 +530,11 @@ class AutonomousPipelineOrchestrator:
 
         mat_rows, claims = await self._generate_evidence_matrix_and_claims(root_dir, candidates, title or "Review Project")
         
+        TaskProgressTracker.set_progress("Extraction", 95, "Formulating styled multi-tab Excel evidence workbook...", step=3)
         # Generate styled Excel evidence workbook (figures are synthesized strictly when manuscript text is complete)
         fig_gen = FigureGenerator(root_dir)
         excel_path = fig_gen.generate_styled_excel_workbook(mat_rows, claims)
+        TaskProgressTracker.set_progress("Extraction", 100, f"Extraction complete: {len(mat_rows)} study rows & {len(claims)} verified claims.", step=3)
 
         return {
             "status": "success",
@@ -522,14 +555,17 @@ class AutonomousPipelineOrchestrator:
         """Stage 4A: Drafts or refines an individual section incorporating custom user steering prompts."""
         cfg = get_settings()
         root_dir = self.workspace_path or Path(cfg.workspace_dir) / (slug or cfg.active_project or "new_paper")
+        TaskProgressTracker.set_progress("Drafting", 20, f"Synthesizing section '{section_key}' with custom human guidance...", step=4)
         synthesizer = ManuscriptSynthesizer(root_dir)
-        return await synthesizer.draft_manuscript(
+        res = await synthesizer.draft_manuscript(
             title=title,
             authors=authors,
             target_journal=target_journal,
             slug=slug or slugify_title(title),
             user_guidance=user_guidance
         )
+        TaskProgressTracker.set_progress("Drafting", 100, "Section drafted & compiled successfully.", step=4)
+        return res
 
     async def stage_compile(
         self,
@@ -543,7 +579,14 @@ class AutonomousPipelineOrchestrator:
         if not slug:
             slug = slugify_title(title)
         cfg = get_settings()
-        root_dir = self.workspace_path or Path(cfg.workspace_dir) / slug
+        if self.workspace_path and self.workspace_path.exists():
+            root_dir = self.workspace_path
+        elif cfg.active_project and Path(cfg.active_project).is_absolute() and Path(cfg.active_project).exists():
+            root_dir = Path(cfg.active_project)
+        else:
+            root_dir = Path(cfg.workspace_dir) / slug
+        self.workspace_path = root_dir
+        TaskProgressTracker.set_progress("Drafting", 15, f"Initializing manuscript synthesis and publication compilers for '{title[:35]}...'...", step=4)
         synthesizer = ManuscriptSynthesizer(root_dir)
         draft_res = await synthesizer.draft_manuscript(
             title=title,
@@ -552,6 +595,7 @@ class AutonomousPipelineOrchestrator:
             slug=slug,
             user_guidance=user_guidance
         )
+        TaskProgressTracker.set_progress("Drafting", 100, "Review paper compiled to camera-ready Word DOCX and Typst PDF!", step=4)
         return {
             "status": "success",
             "slug": slug,

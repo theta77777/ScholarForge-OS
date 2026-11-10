@@ -136,9 +136,9 @@
         <span id="jev-badge-profile" class="font-bold">JEV: AUTO-SELECT</span>
         <span id="jev-badge-domain" class="text-[9px] px-1.5 py-0.5 rounded bg-indigo-950 text-indigo-200 border border-indigo-700 font-semibold">BIOMEDICAL</span>
       </button>
-        <i class="fa-solid fa-bolt text-amber-400"></i>
-        <span id="jev-badge-profile" class="font-bold">JEV: AUTO-SELECT</span>
-        <span id="jev-badge-domain" class="text-[9px] px-1.5 py-0.5 rounded bg-indigo-950 text-indigo-200 border border-indigo-700 font-semibold">BIOMEDICAL</span>
+      <button onclick="openProjectStorageModal()" id="btn-hdr-storage" class="px-2.5 py-1 rounded-md bg-blue-500/15 hover:bg-blue-500/30 border border-blue-500/40 text-blue-300 transition flex items-center space-x-1.5 font-mono text-[11px]" title="Project Folder Setup & Windows Storage Browser">
+        <i class="fa-solid fa-folder-gear text-cyan-400"></i>
+        <span>STORAGE SETUP</span>
       </button>
       <button onclick="openNewProjectModal()" class="px-3 py-1 rounded-md bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-bold text-xs flex items-center space-x-1.5 shadow-lg glow-emerald transition">
         <i class="fa-solid fa-plus-circle"></i>
@@ -196,10 +196,17 @@
       </button>
     </div>
 
-    <!-- Active Review Selector -->
+    <!-- Active Review Selector & Storage Shortcuts -->
     <div class="flex items-center space-x-2 text-xs font-mono">
       <span class="text-slate-500 text-[11px]">ACTIVE REVIEW:</span>
-      <select id="review-topic-selector" onchange="switchProject(this.value)" class="bg-slate-950 border border-slate-800 rounded px-2.5 py-1 text-slate-200 focus:outline-none focus:border-cyan-500 font-mono text-xs font-semibold"></select>
+      <select id="review-topic-selector" onchange="switchProject(this.value)" class="bg-slate-950 border border-slate-800 rounded px-2.5 py-1 text-slate-200 focus:outline-none focus:border-cyan-500 font-mono text-xs font-semibold max-w-[220px]"></select>
+      <button onclick="openProjectStorageModal()" title="Create or select project folder in Windows storage" class="px-2 py-1 rounded bg-blue-950 hover:bg-blue-900 border border-blue-700 text-blue-300 transition cursor-pointer text-xs flex items-center space-x-1">
+        <i class="fa-solid fa-folder-gear text-cyan-400"></i>
+        <span class="hidden sm:inline">Storage</span>
+      </button>
+      <button onclick="openWorkspaceInWindowsExplorer()" title="Open active project in Windows File Explorer" class="px-2 py-1 rounded bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-amber-300 transition cursor-pointer text-xs">
+        <i class="fa-solid fa-folder-open text-amber-400"></i>
+      </button>
     </div>
   </nav>
 
@@ -245,6 +252,88 @@
               <i class="fa-solid fa-graduation-cap text-3xl text-cyan-400 mb-1"></i>
               <span class="text-xs font-mono font-bold text-slate-200">PhD / FACULTY GRADE</span>
               <span class="text-[11px] text-slate-400">Zero Hallucinations</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Storage Location & Custom Folder Setup Banner -->
+        <div class="rounded-xl border border-blue-500/30 bg-gradient-to-r from-slate-900 via-cyber-card to-slate-950 p-4 flex flex-wrap items-center justify-between gap-4 text-xs font-mono shadow-xl">
+          <div class="flex items-center space-x-3.5 truncate max-w-2xl">
+            <div class="w-10 h-10 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-cyan-400 text-lg shrink-0 shadow-inner">
+              <i class="fa-solid fa-folder-tree"></i>
+            </div>
+            <div class="truncate">
+              <div class="flex items-center space-x-2">
+                <span class="text-slate-400 text-[10px] uppercase tracking-wider">Project Storage Location:</span>
+                <span id="banner-active-project-name" class="font-bold text-slate-100">Review Project</span>
+                <span id="banner-custom-tag" class="hidden px-1.5 py-0.2 rounded bg-indigo-950 text-indigo-300 border border-indigo-700 text-[9px] font-bold">CUSTOM STORAGE</span>
+              </div>
+              <p id="banner-active-storage-path" class="text-[11px] text-cyan-300 truncate font-mono mt-0.5">d:\Review paper software\workspace\new_paper</p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button onclick="openProjectStorageModal()" class="px-3.5 py-2 rounded-lg bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold flex items-center space-x-2 transition cursor-pointer shadow-md shadow-blue-900/30">
+              <i class="fa-solid fa-folder-plus text-amber-300"></i>
+              <span>SET PROJECT STORAGE FOLDER</span>
+            </button>
+            <button onclick="openWorkspaceInWindowsExplorer()" class="px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 hover:border-slate-600 flex items-center space-x-1.5 transition cursor-pointer" title="Open this folder in Windows File Explorer">
+              <i class="fa-solid fa-folder-open text-amber-400"></i>
+              <span>OPEN EXPLORER</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Global Live Execution Progress Bar HUD (Steps 1 to 4) -->
+        <div id="global-progress-hud" class="hidden rounded-2xl border-2 border-cyan-500/50 bg-gradient-to-br from-slate-950 via-cyber-card to-slate-950 p-5 shadow-2xl shadow-cyan-950/50 font-mono text-xs space-y-3.5 transition-all duration-300">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 pb-3">
+            <div class="flex items-center space-x-3">
+              <span id="hud-step-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 flex items-center space-x-2">
+                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+                <span id="hud-step-text">STEP 1 / 4: SEARCH & CATALOG</span>
+              </span>
+              <span id="hud-task-name" class="font-extrabold text-slate-100 text-sm truncate max-w-md">Processing Research Task...</span>
+            </div>
+            <div class="flex items-center space-x-4">
+              <span id="hud-timer" class="text-slate-400 text-xs flex items-center space-x-1.5 bg-slate-900 px-2.5 py-1 rounded border border-slate-800">
+                <i class="fa-regular fa-clock text-cyan-400"></i>
+                <span id="hud-timer-text">00:00</span>
+              </span>
+              <div class="flex items-baseline space-x-1">
+                <span id="hud-percentage-text" class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-300 to-emerald-300 font-mono tracking-tight">0%</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Animated Progress Bar with glowing gradient -->
+          <div class="space-y-1">
+            <div class="relative w-full bg-slate-950 rounded-full h-3.5 overflow-hidden border border-slate-800 shadow-inner p-0.5">
+              <div id="hud-progress-bar" class="h-full bg-gradient-to-r from-cyan-500 via-blue-500 to-emerald-400 rounded-full transition-all duration-300 relative shadow-md shadow-cyan-500/40" style="width: 0%">
+                <div class="absolute inset-0 bg-white/20 animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Real-Time Telemetry Status Line & Step Badges -->
+          <div class="flex flex-wrap items-center justify-between gap-3 text-xs pt-1">
+            <div class="flex items-center space-x-2.5 text-slate-200 truncate max-w-xl">
+              <i class="fa-solid fa-circle-notch fa-spin text-cyan-400 text-sm" id="hud-spinner-icon"></i>
+              <span id="hud-live-message" class="truncate font-semibold text-cyan-200">Initializing execution engine...</span>
+            </div>
+            
+            <!-- 4 Micro Badges -->
+            <div class="flex items-center space-x-1.5 text-[11px] font-mono">
+              <span id="hud-micro-1" class="px-2 py-0.5 rounded bg-slate-900 text-slate-400 border border-slate-800 flex items-center space-x-1">
+                <i class="fa-solid fa-magnifying-glass text-[10px]"></i> <span>1. Search</span>
+              </span>
+              <span id="hud-micro-2" class="px-2 py-0.5 rounded bg-slate-900 text-slate-400 border border-slate-800 flex items-center space-x-1">
+                <i class="fa-solid fa-cloud-arrow-down text-[10px]"></i> <span>2. Download</span>
+              </span>
+              <span id="hud-micro-3" class="px-2 py-0.5 rounded bg-slate-900 text-slate-400 border border-slate-800 flex items-center space-x-1">
+                <i class="fa-solid fa-microscope text-[10px]"></i> <span>3. Extract</span>
+              </span>
+              <span id="hud-micro-4" class="px-2 py-0.5 rounded bg-slate-900 text-slate-400 border border-slate-800 flex items-center space-x-1">
+                <i class="fa-solid fa-file-signature text-[10px]"></i> <span>4. Synthesize</span>
+              </span>
             </div>
           </div>
         </div>
@@ -2014,6 +2103,98 @@
     </div>
   </div>
 
+  <!-- Dedicated Project Storage & Windows Directory Setup Modal -->
+  <div id="modal-project-storage" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 font-mono">
+    <div class="bg-cyber-card border border-cyber-cardborder rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 text-xs">
+      <div class="flex items-center justify-between border-b border-cyber-cardborder pb-3">
+        <h3 class="font-bold text-sm text-cyan-300 flex items-center space-x-2">
+          <i class="fa-solid fa-folder-gear text-cyan-400"></i>
+          <span>PROJECT STORAGE & LOCAL PC DIRECTORY SETUP</span>
+        </h3>
+        <button onclick="closeProjectStorageModal()" class="text-slate-400 hover:text-slate-200"><i class="fa-solid fa-xmark text-sm"></i></button>
+      </div>
+
+      <p class="text-slate-300 text-xs leading-relaxed">
+        Choose any folder on your computer to store all project assets. All downloaded academic PDFs, verified evidence matrices, 300 DPI figures, Word .docx, and Typst PDF manuscripts will be saved directly into this local folder.
+      </p>
+
+      <div class="space-y-4 bg-slate-950/80 p-4 rounded-xl border border-slate-800">
+        <!-- Project Naming Bar -->
+        <div>
+          <label class="block font-semibold text-slate-200 mb-1">
+            Project Title / Research Question <span class="text-rose-400">*</span>
+          </label>
+          <input type="text" id="storage-project-name" 
+                 oninput="syncStorageFolderName(this.value)"
+                 placeholder="e.g. Next-Generation Solid-State Lithium Batteries: Interfacial Degradation"
+                 class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-cyan-400 font-sans text-sm">
+        </div>
+
+        <!-- Folder Name (slug) -->
+        <div>
+          <label class="block font-semibold text-slate-200 mb-1">
+            Folder Name on Disk <span class="text-slate-500 text-[10px]">(Folder created inside storage location)</span>
+          </label>
+          <input type="text" id="storage-folder-name" 
+                 oninput="updateStoragePreviewPath()"
+                 placeholder="solid_state_lithium_batteries"
+                 class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-cyan-300 font-mono text-xs focus:outline-none focus:border-cyan-400">
+        </div>
+
+        <!-- Windows Storage Parent Location -->
+        <div>
+          <label class="block font-semibold text-slate-200 mb-1">
+            Windows Storage Directory Location
+          </label>
+          <div class="flex items-center gap-2">
+            <input type="text" id="storage-parent-dir" 
+                   oninput="updateStoragePreviewPath()"
+                   placeholder="Click 'Browse in Windows Storage' or enter path (e.g. D:\MyResearch)"
+                   class="flex-1 bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 font-mono text-xs focus:outline-none focus:border-cyan-400">
+            <button type="button" onclick="browseWindowsStorageDirectory()" 
+                    class="px-3.5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-lg font-bold flex items-center space-x-1.5 shadow-md transition cursor-pointer shrink-0">
+              <i class="fa-solid fa-folder-open text-amber-300"></i>
+              <span>Browse in Windows Storage</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Full Target Path Preview -->
+        <div class="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800 text-[11px] space-y-1">
+          <span class="text-slate-400 text-[10px] uppercase font-semibold">Active Destination Folder:</span>
+          <div id="storage-preview-target" class="text-cyan-300 font-mono break-all font-medium">d:\Review paper software\workspace\new_paper</div>
+        </div>
+
+        <!-- Migration Checkbox -->
+        <div class="flex items-center space-x-2 pt-1">
+          <input type="checkbox" id="storage-copy-files" checked class="w-4 h-4 accent-cyan-500">
+          <label for="storage-copy-files" class="text-slate-300 font-medium cursor-pointer">
+            Copy existing files from current session into the new folder (if applicable)
+          </label>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-cyber-cardborder">
+        <button type="button" onclick="openWorkspaceInWindowsExplorer()" class="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center space-x-1.5 transition cursor-pointer text-xs">
+          <i class="fa-solid fa-folder-open text-amber-400"></i>
+          <span>Open Current in Windows Explorer</span>
+        </button>
+
+        <div class="flex items-center space-x-2">
+          <button type="button" onclick="closeProjectStorageModal()" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">
+            Cancel
+          </button>
+          <button type="button" onclick="executeCreateCustomProject()" id="btn-create-custom-project" 
+                  class="px-5 py-2 rounded-lg bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold flex items-center space-x-2 shadow-lg shadow-cyan-900/40 cursor-pointer">
+            <i class="fa-solid fa-folder-plus text-amber-300"></i>
+            <span>Create & Set Project Folder</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2 font-mono text-xs max-w-sm pointer-events-none"></div>
 
   <!-- JavaScript Application Logic -->
@@ -2024,6 +2205,268 @@
     let activeFigureId = "";
     let activeMatrixRows = [];
     let activeClaimsRows = [];
+
+    // ── PROGRESS POLLING & LIVE TELEMETRY HUD CONTROLLER ──
+    let progressPollInterval = null;
+    let progressStartTime = 0;
+
+    function formatElapsedTimer(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    function updateHUDMicroBadges(currentStep, isComplete) {
+      for (let s = 1; s <= 4; s++) {
+        const el = document.getElementById(`hud-micro-${s}`);
+        if (!el) continue;
+        if (isComplete || s < currentStep) {
+          el.className = 'px-2 py-0.5 rounded bg-emerald-950/90 text-emerald-300 border border-emerald-700 font-bold flex items-center space-x-1';
+        } else if (s === currentStep) {
+          el.className = 'px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-500 font-bold animate-pulse flex items-center space-x-1';
+        } else {
+          el.className = 'px-2 py-0.5 rounded bg-slate-900 text-slate-500 border border-slate-800 flex items-center space-x-1';
+        }
+      }
+    }
+
+    function startProgressPolling(initialTask = "Executing Task...", initialStep = 1) {
+      const hud = document.getElementById('global-progress-hud');
+      if (hud) hud.classList.remove('hidden');
+
+      progressStartTime = Date.now();
+      const timerEl = document.getElementById('hud-timer-text');
+      const taskNameEl = document.getElementById('hud-task-name');
+      const stepTextEl = document.getElementById('hud-step-text');
+      const barEl = document.getElementById('hud-progress-bar');
+      const pctEl = document.getElementById('hud-percentage-text');
+      const msgEl = document.getElementById('hud-live-message');
+      const spinner = document.getElementById('hud-spinner-icon');
+
+      if (taskNameEl) taskNameEl.innerText = initialTask;
+      if (stepTextEl) stepTextEl.innerText = `STEP ${initialStep} / 4: IN PROGRESS`;
+      if (barEl) barEl.style.width = '6%';
+      if (pctEl) pctEl.innerText = '6%';
+      if (msgEl) msgEl.innerText = 'Starting task execution...';
+      if (spinner) spinner.className = 'fa-solid fa-circle-notch fa-spin text-cyan-400 text-sm';
+      updateHUDMicroBadges(initialStep, false);
+
+      if (progressPollInterval) clearInterval(progressPollInterval);
+
+      progressPollInterval = setInterval(async () => {
+        try {
+          const res = await fetch(`${API}/agent/progress`);
+          const data = await res.json();
+          
+          const pct = Math.max(5, data.percentage || 0);
+          const step = data.step || initialStep;
+          const msg = data.message || "Executing...";
+          const task = data.task_name || initialTask;
+          const elapsed = data.elapsed_seconds || Math.floor((Date.now() - progressStartTime) / 1000);
+
+          if (timerEl) timerEl.innerText = formatElapsedTimer(elapsed);
+          if (barEl) barEl.style.width = `${pct}%`;
+          if (pctEl) pctEl.innerText = `${pct}%`;
+          if (msgEl) msgEl.innerText = msg;
+          if (taskNameEl) taskNameEl.innerText = task;
+          
+          const stepNames = {
+            1: "STEP 1 / 4: SEARCH & CATALOG",
+            2: "STEP 2 / 4: FULL-TEXT ACQUISITION",
+            3: "STEP 3 / 4: PICO EVIDENCE EXTRACTION",
+            4: "STEP 4 / 4: THEMATIC SYNTHESIS & COMPILATION"
+          };
+          if (stepTextEl) stepTextEl.innerText = stepNames[step] || `STEP ${step} / 4`;
+
+          const isDone = (pct >= 100) || (data.active === false && pct > 80);
+          updateHUDMicroBadges(step, isDone);
+
+          if (isDone) {
+            if (barEl) barEl.style.width = '100%';
+            if (pctEl) pctEl.innerText = '100%';
+            if (spinner) spinner.className = 'fa-solid fa-circle-check text-emerald-400 text-sm';
+            if (stepTextEl) stepTextEl.innerText = `STEP ${step} / 4: COMPLETE`;
+            stopProgressPolling();
+          }
+        } catch (e) {
+          console.warn("Progress poll note:", e);
+        }
+      }, 350);
+    }
+
+    function stopProgressPolling() {
+      if (progressPollInterval) {
+        clearInterval(progressPollInterval);
+        progressPollInterval = null;
+      }
+    }
+
+    // ── PROJECT STORAGE & FOLDER CONTROLLER ──
+    async function openProjectStorageModal() {
+      const modal = document.getElementById("modal-project-storage");
+      if (!modal) return;
+      modal.classList.remove("hidden");
+
+      const heroTitle = document.getElementById("hero-title")?.value?.trim() || "";
+      const nameInput = document.getElementById("storage-project-name");
+      if (heroTitle && nameInput && !nameInput.value) {
+        nameInput.value = heroTitle;
+        syncStorageFolderName(heroTitle);
+      }
+
+      try {
+        const res = await fetch(`${API}/workspace/current`);
+        const data = await res.json();
+        if (data.status === "success") {
+          if (nameInput && !nameInput.value) {
+            nameInput.value = data.title || "";
+            syncStorageFolderName(data.title || "");
+          }
+          const parentInput = document.getElementById("storage-parent-dir");
+          if (parentInput && !parentInput.value) {
+            const wsPath = data.workspace_path;
+            const lastSlash = Math.max(wsPath.lastIndexOf('\\'), wsPath.lastIndexOf('/'));
+            if (lastSlash > 0) {
+              parentInput.value = wsPath.substring(0, lastSlash);
+            }
+          }
+          updateStoragePreviewPath();
+        }
+      } catch (e) {
+        console.warn("Storage info note:", e);
+      }
+    }
+
+    function closeProjectStorageModal() {
+      const modal = document.getElementById("modal-project-storage");
+      if (modal) modal.classList.add("hidden");
+    }
+
+    function syncStorageFolderName(title) {
+      const slug = (title || "")
+        .toLowerCase()
+        .replace(/[^\w\s-]/g, "")
+        .replace(/[\s_-]+/g, "_")
+        .substring(0, 50)
+        .replace(/^_+|_+$/g, "") || "review_project";
+      const slugInput = document.getElementById("storage-folder-name");
+      if (slugInput) slugInput.value = slug;
+      updateStoragePreviewPath();
+    }
+
+    function updateStoragePreviewPath() {
+      const parentDir = document.getElementById("storage-parent-dir")?.value?.trim() || "d:\\Review paper software\\workspace";
+      const folderName = document.getElementById("storage-folder-name")?.value?.trim() || "review_project";
+      const previewEl = document.getElementById("storage-preview-target");
+      if (!previewEl) return;
+
+      const sep = parentDir.includes('/') ? '/' : '\\';
+      let target = parentDir;
+      if (!target.endsWith(sep)) target += sep;
+      target += folderName;
+      previewEl.innerText = target;
+    }
+
+    async function browseWindowsStorageDirectory() {
+      try {
+        let chosenPath = null;
+        if (window.electronAPI && typeof window.electronAPI.selectStorageFolder === "function") {
+          chosenPath = await window.electronAPI.selectStorageFolder();
+        } else {
+          showToast("Launching Windows folder browser dialog...", "info");
+          const curDir = document.getElementById("storage-parent-dir")?.value || null;
+          const res = await fetch(`${API}/workspace/browse-directory`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ initial_dir: curDir })
+          });
+          const data = await res.json();
+          if (data.status === "success" && data.selected_path) {
+            chosenPath = data.selected_path;
+          }
+        }
+
+        if (chosenPath) {
+          const parentInput = document.getElementById("storage-parent-dir");
+          if (parentInput) {
+            parentInput.value = chosenPath;
+            updateStoragePreviewPath();
+          }
+          showToast(`Selected Windows storage folder: ${chosenPath}`, "success");
+        }
+      } catch (e) {
+        showToast(`Folder selection note: ${e.message}`, "warning");
+      }
+    }
+
+    async function executeCreateCustomProject() {
+      const projectName = document.getElementById("storage-project-name")?.value?.trim();
+      if (!projectName) {
+        showToast("Please enter a project title or research topic.", "warning");
+        return;
+      }
+      const folderName = document.getElementById("storage-folder-name")?.value?.trim() || null;
+      const storagePath = document.getElementById("storage-parent-dir")?.value?.trim() || null;
+      const copyFiles = document.getElementById("storage-copy-files")?.checked || false;
+
+      const btn = document.getElementById("btn-create-custom-project");
+      const origHtml = btn.innerHTML;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-amber-300"></i> <span>Creating Folder Structure...</span>`;
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(`${API}/workspace/create-custom-project`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            project_name: projectName,
+            folder_name: folderName,
+            storage_path: storagePath,
+            copy_existing_files: copyFiles
+          })
+        });
+        const data = await res.json();
+        if (data.status === "success") {
+          showToast(`Project folder created & initialized at ${data.workspace_path}!`, "success");
+          activeTopicSlug = data.slug;
+          
+          const heroTitle = document.getElementById("hero-title");
+          if (heroTitle && !heroTitle.value) {
+            heroTitle.value = projectName;
+          }
+
+          await loadProjectsList();
+          await updateActiveStorageBanner();
+          await loadWorkspaceTree();
+          closeProjectStorageModal();
+        } else {
+          showToast(`Failed creating project folder: ${data.detail || "Unknown error"}`, "error");
+        }
+      } catch (e) {
+        showToast(`Error creating folder: ${e.message}`, "error");
+      } finally {
+        btn.innerHTML = origHtml;
+        btn.disabled = false;
+      }
+    }
+
+    async function updateActiveStorageBanner() {
+      try {
+        const res = await fetch(`${API}/workspace/current`);
+        const data = await res.json();
+        if (data.status === "success") {
+          const nameEl = document.getElementById("banner-active-project-name");
+          const pathEl = document.getElementById("banner-active-storage-path");
+          const tagEl = document.getElementById("banner-custom-tag");
+          if (nameEl) nameEl.innerText = data.title || data.slug;
+          if (pathEl) pathEl.innerText = data.workspace_path;
+          if (tagEl) {
+            if (data.is_custom_path) tagEl.classList.remove("hidden");
+            else tagEl.classList.add("hidden");
+          }
+        }
+      } catch (e) {}
+    }
 
     window.addEventListener("DOMContentLoaded", async () => {
       switchTab("start");
@@ -2038,6 +2481,7 @@
       } catch (e) {}
 
       await loadProjectsList();
+      await updateActiveStorageBanner();
       if (activeTopicSlug) {
         await loadManuscript();
         await loadFigures();
@@ -2866,6 +3310,7 @@
       const origHtml = btn.innerHTML;
       btn.innerHTML = `<i class="fa-solid fa-atom fa-spin text-amber-300 text-lg"></i> <span>QUERYING ACADEMIC GRAPH & WEB ACROSS 100+ SOURCES...</span>`;
       btn.disabled = true;
+      startProgressPolling("Federated Academic Search & Discovery", 1);
 
       try {
         const res = await fetch(`${API}/workspace/stage/search`, {
@@ -3008,6 +3453,7 @@
       const origHtml = btn.innerHTML;
       btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-indigo-400"></i> <span>Deduplicating...</span>`;
       btn.disabled = true;
+      startProgressPolling("Candidate Deduplication & Harmonization", 2);
 
       try {
         const res = await fetch(`${API}/workspace/stage/deduplicate`, {
@@ -3040,6 +3486,7 @@
       const origHtml = btn.innerHTML;
       btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-cyan-400"></i> <span>Analyzing Abstracts...</span>`;
       btn.disabled = true;
+      startProgressPolling("AI Abstract Screening & Relevance Tiers", 2);
 
       try {
         const res = await fetch(`${API}/workspace/stage/organize-candidates`, {
@@ -3118,6 +3565,7 @@
       const origText = textSpan.innerText;
       textSpan.innerText = `DOWNLOADING ${selected.length} ITEMS INTO 02_SOURCES/ORIGINALS/...`;
       btn.disabled = true;
+      startProgressPolling("Concurrent Literature Acquisition & Ingestion", 2);
 
       try {
         const res = await fetch(`${API}/workspace/stage/download`, {
@@ -3310,6 +3758,7 @@
       tracker.classList.remove('hidden');
       textSpan.innerText = "READING SOURCES 1-BY-1 & FORMULATING PICO MATRIX...";
       btn.disabled = true;
+      startProgressPolling("Deep PICO Evidence Matrix & Claims Extraction", 3);
 
       try {
         const title = document.getElementById('hero-title').value.trim();
@@ -3353,6 +3802,7 @@
       tracker.classList.remove('hidden');
       textSpan.innerText = "SYNTHESIZING REVIEW MANUSCRIPT & COMPILING TYPESET EXPORTS...";
       btn.disabled = true;
+      startProgressPolling("Thematic Synthesis & Publication Typesetting", 4);
 
       try {
         const res = await fetch(`${API}/workspace/stage/draft-section`, {
@@ -3443,6 +3893,7 @@
         if (pathEl && data.workspace_path) pathEl.innerText = data.workspace_path;
         loadSourcesInventory();
         loadSubscriptionList();
+        updateActiveStorageBanner();
 
         let totalFiles = 0;
         Object.values(tree).forEach(fList => totalFiles += fList.length);
@@ -3453,22 +3904,37 @@
           "01_search": "fa-magnifying-glass text-blue-400",
           "02_sources": "fa-box-archive text-amber-400",
           "03_extraction": "fa-microscope text-teal-400",
-          "04_evidence": "fa-table-cells text-emerald-400",
+          "04_analysis": "fa-table-cells text-emerald-400",
           "05_figures_tables": "fa-chart-pie text-purple-400",
           "06_manuscript": "fa-book-bookmark text-pink-400",
-          "07_audit": "fa-shield-halved text-rose-400",
+          "07_quality": "fa-shield-halved text-rose-400",
           "08_final": "fa-trophy text-amber-300"
+        };
+
+        const folderLabels = {
+          "00_project": "Project Brief & State Machine",
+          "01_search": "Search Logs & Candidate Catalog",
+          "02_sources": "Source PDFs & Subscription Lists",
+          "03_extraction": "Evidence Matrix & Claims Ledger",
+          "04_analysis": "Study Data & Analysis Code",
+          "05_figures_tables": "300 DPI Figures & PRISMA Flowchart",
+          "06_manuscript": "Markdown Drafts & CSL References",
+          "07_quality": "7-Perspective Audit Reports",
+          "08_final": "Word DOCX, Typst PDF & Excel Matrix"
         };
 
         const fileIcons = {
           ".pdf": "fa-file-pdf text-red-400",
           ".docx": "fa-file-word text-blue-400",
+          ".xlsx": "fa-file-excel text-emerald-400",
           ".csv": "fa-file-csv text-teal-400",
           ".md": "fa-file-lines text-slate-300",
           ".txt": "fa-file-lines text-slate-400",
           ".json": "fa-file-code text-amber-400",
           ".svg": "fa-file-image text-purple-400",
           ".png": "fa-file-image text-emerald-400",
+          ".jpg": "fa-file-image text-emerald-400",
+          ".jpeg": "fa-file-image text-emerald-400",
           ".zip": "fa-file-zipper text-purple-300"
         };
 
@@ -3476,14 +3942,21 @@
 
         container.innerHTML = Object.entries(tree).map(([folder, files]) => {
           const fIcon = folderIcons[folder] || "fa-folder text-indigo-400";
+          const fLabel = folderLabels[folder] || folder;
           return `
             <div class="rounded-lg bg-slate-950/70 border border-slate-800/80 p-2.5 space-y-1.5 font-mono text-xs">
-              <div class="flex items-center justify-between text-slate-200 font-bold border-b border-slate-900 pb-1">
-                <span class="flex items-center space-x-1.5">
+              <div class="flex items-center justify-between text-slate-200 font-bold border-b border-slate-900 pb-1.5">
+                <div class="flex items-center space-x-1.5 truncate max-w-[240px]">
                   <i class="fa-solid ${fIcon}"></i>
                   <span class="text-slate-100">${folder}/</span>
-                </span>
-                <span class="text-[10px] text-slate-500 font-normal">(${files.length})</span>
+                  <span class="text-[10px] text-slate-500 font-normal truncate block">(${files.length})</span>
+                </div>
+                <div class="flex items-center space-x-1 shrink-0">
+                  <span class="text-[10px] text-slate-500 font-normal mr-1 hidden sm:inline text-right truncate max-w-[120px]">${fLabel}</span>
+                  <button onclick="openWorkspaceInWindowsExplorer('${folder}')" title="Open ${folder} in Windows File Explorer" class="px-1.5 py-0.5 rounded bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-amber-300 border border-slate-800 transition cursor-pointer">
+                    <i class="fa-solid fa-folder-open text-xs"></i>
+                  </button>
+                </div>
               </div>
               <div class="space-y-1 max-h-36 overflow-y-auto pr-1">
                 ${files.map(f => {
@@ -3501,7 +3974,7 @@
                       </div>
                     </div>
                   `;
-                }).join('') || '<span class="text-slate-600 text-[10px] block py-0.5">Empty directory</span>'}
+                }).join('') || '<span class="text-slate-600 text-[10px] block py-0.5 italic">Empty folder (will populate upon stage completion)</span>'}
               </div>
             </div>
           `;
@@ -3830,6 +4303,7 @@
 
       const tracker = document.getElementById("np-pipeline-tracker");
       tracker.classList.remove("hidden");
+      startProgressPolling("Autonomous Full Review Paper Pipeline", 1);
 
       const updateStep = (idx, text) => {
         const el = document.getElementById(`step-${idx}`);

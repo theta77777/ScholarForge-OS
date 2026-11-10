@@ -96,6 +96,19 @@ def get_live_agent_logs():
     """Returns streaming telemetry logs for the developer terminal HUD."""
     return {"logs": AgentLogger.get_logs()}
 
+@app.get("/api/agent/progress")
+def get_live_progress():
+    """Returns real-time percentage progress and task telemetry across Steps 1 to 4."""
+    from ..core.agent_logs import TaskProgressTracker
+    return TaskProgressTracker.get_progress()
+
+@app.post("/api/agent/progress/reset")
+def reset_progress():
+    """Resets the task progress tracker."""
+    from ..core.agent_logs import TaskProgressTracker
+    TaskProgressTracker.reset()
+    return {"status": "success"}
+
 @app.get("/api/pdf/{filename}")
 def view_pdf_inline(filename: str):
     """

@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 
 from ..core.rate_limiter import rate_limiter
 from ..core.database import DatabaseManager
-from ..core.agent_logs import AgentLogger
+from ..core.agent_logs import AgentLogger, TaskProgressTracker
 
 BROWSER_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -395,7 +395,12 @@ class LiteratureDownloader:
         downloaded = []
         subscription_required = []
 
+        total = len(candidates)
+        completed_count = 0
+        TaskProgressTracker.set_progress("Acquisition", 5, f"Launching mass acquisition for {total} selected sources...", step=2)
+
         async def worker(c: Dict[str, Any]):
+            nonlocal completed_count
             async with sem:
                 cid = c.get("catalog_id", "C000")
                 key = c.get("citation_key", "source")
@@ -426,6 +431,15 @@ class LiteratureDownloader:
                 else:
                     subscription_required.append(res)
 
+                completed_count += 1
+                pct = int(5 + (completed_count / max(1, total)) * 90)
+                TaskProgressTracker.set_progress(
+                    "Acquisition",
+                    pct,
+                    f"Acquired {len(downloaded)} / {total} files ({completed_count}/{total} checked) - {title[:38]}...",
+                    step=2
+                )
+
         await asyncio.gather(*(worker(c) for c in candidates), return_exceptions=True)
 
         # Write subscription manual verification CSV and JSON
@@ -444,6 +458,12 @@ class LiteratureDownloader:
         with open(sub_json, "w", encoding="utf-8") as f:
             json.dump(subscription_required, f, indent=2)
 
+        TaskProgressTracker.set_progress(
+            "Acquisition",
+            100,
+            f"Acquisition complete: {len(downloaded)} local files saved in 02_sources/originals/, {len(subscription_required)} in manual list.",
+            step=2
+        )
         AgentLogger.log("DOWNLOAD", f"Acquisition Complete: {len(downloaded)} stored in 02_sources/originals/, {len(subscription_required)} recorded in subscription manual verification list.", "success")
         
         return {
