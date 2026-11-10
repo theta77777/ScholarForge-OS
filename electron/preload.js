@@ -5,3 +5,4 @@ contextBridge.exposeInMainWorld('electronAPI', {
   selectStorageFolder: () => ipcRenderer.invoke('select-storage-folder'),
   openPath: (targetPath) => ipcRenderer.invoke('open-path', targetPath)
 });
+
