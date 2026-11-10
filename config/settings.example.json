@@ -1,0 +1,56 @@
+{
+  "app_name": "ScholarForge OS",
+  "version": "2.2.0",
+  "gemini_api_key": "",
+  "target_journal_preset": "nature_reviews",
+  "workspace_dir": "workspace",
+  "active_project": "",
+  "enable_jev": true,
+  "jev_profile": "auto",
+  "jev_domain": "biomedical",
+  "api_vault": {
+    "scite_api_key": "",
+    "copyleaks_api_key": "",
+    "gptzero_api_key": "",
+    "deepl_api_key": "",
+    "groq_api_key": "",
+    "openrouter_api_key": "",
+    "cerebras_api_key": "",
+    "serpapi_key": "",
+    "materials_project_key": "",
+    "ncbi_api_key": "",
+    "core_api_key": "",
+    "zenodo_token": ""
+  },
+  "api_overrides": {},
+  "models": {
+    "default_workhorse": "gemini-3.8-flash",
+    "flash_thinking_budget": "high",
+    "enable_google_search_grounding": true,
+    "use_openai_api_key": false,
+    "openai_api_key": "",
+    "mcp_enabled": true,
+    "mcp_servers": {
+      "chatgpt_desktop": {
+        "enabled": true,
+        "transport": "stdio",
+        "command": "npx -y @modelcontextprotocol/server-everything"
+      },
+      "local_astra": {
+        "enabled": false,
+        "transport": "sse",
+        "url": "http://localhost:8001/sse"
+      },
+      "local_sol_6_1": {
+        "enabled": false,
+        "transport": "sse",
+        "url": "http://localhost:8002/sse"
+      }
+    },
+    "enable_automated_decisions": false,
+    "codeiv_api_url": "https://api.codeiv.com/v1",
+    "codeiv_api_key": "",
+    "voice_mode": "google_speech",
+    "local_whisper_model": "small.en"
+  }
+}

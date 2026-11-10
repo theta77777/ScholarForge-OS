@@ -1,0 +1,42 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Local sensitive configuration and runtime database
+config/settings.json
+config/cache.db
+
+# Workspace user runtime projects (keep workspace directory with .gitkeep)
+workspace/*
+!workspace/.gitkeep
+
+# Intermediate extracted archives / one-off patches
+extracted_skills/
+extracted_skills_unpacked/
+patch_*.py
+update_ui.py
+
+# Logs
+*.log
+
+# IDE and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Archives
+*.zip

@@ -1,0 +1,9 @@
+{
+  "font_family": "Times New Roman", "preferred_print_width_inches": 6.5,
+  "minimum_label_pt_at_print": 9, "preferred_label_pt_at_print": 10,
+  "bitmap_minimum_effective_dpi": 600, "background": "#FFFFFF",
+  "colours": {"ink": "#263746", "primary": "#2F6584", "secondary": "#367D73", "conditional": "#B56B35", "neutral": "#6D7881", "light_fill": "#EFF4F6"},
+  "editable_master": "SVG or equivalent vector",
+  "encode_uncertainty_without_colour_alone": true,
+  "required_records": ["caption", "source_or_data_map", "conceptual_or_empirical_status", "code_or_editable_source", "AI_assistance_disclosure_if_used", "actual_verification_status"]
+}

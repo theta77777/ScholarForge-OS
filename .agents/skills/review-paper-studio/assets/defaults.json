@@ -1,0 +1,14 @@
+{
+  "profile_version": "1.0.0",
+  "main_words_target": 6500, "main_words_min": 6400, "main_words_max": 6700,
+  "whole_words_max": 11000,
+  "references_target_min": 90, "references_target_max": 100,
+  "reference_count_is_quality_quota": false,
+  "citation_style": "numbered",
+  "font_family": "Times New Roman", "title_pt": 18, "heading_pt": 14, "body_pt": 12,
+  "line_spacing": 1.15, "page_size": "A4", "page_count_is_hard_target": false,
+  "journal_candidates": 5, "prefer_verified_jif_below": 3,
+  "prefer_no_mandatory_publication_charge": true,
+  "outputs": ["Main_Paper.pdf", "Main_Paper.docx", "Supporting_Material.pdf", "Supporting_Material.docx", "Research_and_Figures.zip"],
+  "allow_external_submission": false, "allow_background_work": false
+}
