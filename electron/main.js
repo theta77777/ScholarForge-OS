@@ -35,7 +35,15 @@ async function ensureServerRunning() {
 
   console.log(`[ScholarForge Desktop] Spawning Python server daemon...`);
   const projectRoot = path.resolve(__dirname, '..');
-  const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
+  const fs = require('fs');
+  const venvPythonWin = path.join(projectRoot, '.venv', 'Scripts', 'python.exe');
+  const venvPythonNix = path.join(projectRoot, '.venv', 'bin', 'python');
+  let pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
+  if (process.platform === 'win32' && fs.existsSync(venvPythonWin)) {
+    pythonCmd = venvPythonWin;
+  } else if (process.platform !== 'win32' && fs.existsSync(venvPythonNix)) {
+    pythonCmd = venvPythonNix;
+  }
 
   pythonProcess = spawn(pythonCmd, ['run_server.py'], {
     cwd: projectRoot,

@@ -28,6 +28,7 @@ ENV/
 .env.*.local
 config/settings.json
 config/cache.db
+config/matplotlib/
 
 # Workspace user runtime projects (keep workspace directory with .gitkeep)
 workspace/*

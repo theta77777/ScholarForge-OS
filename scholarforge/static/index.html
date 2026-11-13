@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en" class="dark" data-theme="cyber-neon">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,21 +12,21 @@
         extend: {
           fontFamily: {
             mono: ['"Fira Code"', 'monospace'],
-            sans: ['Inter', 'sans-serif'],
+            sans: ['Inter', '"Plus Jakarta Sans"', 'sans-serif'],
             serif: ['"Times New Roman"', 'Times', 'serif']
           },
           colors: {
             cyber: {
-              bg: '#050811',
-              card: '#0a0f1d',
-              cardborder: '#162238',
-              cardhover: '#1b2a47',
-              cyan: '#00f0ff',
-              emerald: '#00ff88',
-              violet: '#a855f7',
-              amber: '#f59e0b',
-              rose: '#f43f5e',
-              slate: '#64748b'
+              bg: 'var(--bg-primary)',
+              card: 'var(--bg-card)',
+              cardborder: 'var(--bg-card-border)',
+              cardhover: 'var(--bg-card-hover)',
+              cyan: 'var(--accent-primary)',
+              emerald: 'var(--accent-tertiary)',
+              violet: 'var(--accent-secondary)',
+              amber: 'var(--accent-amber)',
+              rose: 'var(--accent-rose)',
+              slate: 'var(--text-muted)'
             }
           }
         }
@@ -36,170 +36,482 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    body {
-      background-color: #050811;
-      background-image: 
-        radial-gradient(at 0% 0%, rgba(0, 240, 255, 0.04) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.04) 0px, transparent 50%),
-        linear-gradient(to right, rgba(255, 255, 255, 0.012) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
-      background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+    /* ══════════════════════════════════════════════════════════════
+       SCHOLARFORGE MULTI-THEME ENGINE (8 CALIBRATED PRESETS)
+       ══════════════════════════════════════════════════════════════ */
+    :root, [data-theme="cyber-neon"] {
+      --bg-primary: #050811;
+      --bg-card: #0a0f1d;
+      --bg-card-border: #162238;
+      --bg-card-hover: #1b2a47;
+      --accent-primary: #00f0ff;
+      --accent-secondary: #a855f7;
+      --accent-tertiary: #00ff88;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-glow: rgba(0, 240, 255, 0.25);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --header-bg: rgba(10, 15, 29, 0.92);
+      --nav-bg: rgba(10, 15, 29, 0.85);
+      --grid-line: rgba(255, 255, 255, 0.015);
+      --body-grad-1: rgba(0, 240, 255, 0.04);
+      --body-grad-2: rgba(168, 85, 247, 0.04);
     }
+
+    [data-theme="deep-ocean"] {
+      --bg-primary: #070d1e;
+      --bg-card: #0c152d;
+      --bg-card-border: #1a2c54;
+      --bg-card-hover: #223a6e;
+      --accent-primary: #38bdf8;
+      --accent-secondary: #3b82f6;
+      --accent-tertiary: #06b6d4;
+      --accent-amber: #fbbf24;
+      --accent-rose: #fb7185;
+      --accent-glow: rgba(56, 189, 248, 0.25);
+      --text-main: #f0f6fc;
+      --text-muted: #8dacd1;
+      --header-bg: rgba(12, 21, 45, 0.92);
+      --nav-bg: rgba(12, 21, 45, 0.85);
+      --grid-line: rgba(56, 189, 248, 0.02);
+      --body-grad-1: rgba(56, 189, 248, 0.05);
+      --body-grad-2: rgba(59, 130, 246, 0.05);
+    }
+
+    [data-theme="emerald-matrix"] {
+      --bg-primary: #04120a;
+      --bg-card: #081d12;
+      --bg-card-border: #143825;
+      --bg-card-hover: #1b4b32;
+      --accent-primary: #00ff88;
+      --accent-secondary: #10b981;
+      --accent-tertiary: #14b8a6;
+      --accent-amber: #eab308;
+      --accent-rose: #f43f5e;
+      --accent-glow: rgba(0, 255, 136, 0.25);
+      --text-main: #f0fdf4;
+      --text-muted: #86efac;
+      --header-bg: rgba(8, 29, 18, 0.92);
+      --nav-bg: rgba(8, 29, 18, 0.85);
+      --grid-line: rgba(0, 255, 136, 0.02);
+      --body-grad-1: rgba(0, 255, 136, 0.05);
+      --body-grad-2: rgba(16, 185, 129, 0.05);
+    }
+
+    [data-theme="quantum-violet"] {
+      --bg-primary: #0b0616;
+      --bg-card: #140d25;
+      --bg-card-border: #291a47;
+      --bg-card-hover: #36235e;
+      --accent-primary: #c084fc;
+      --accent-secondary: #9333ea;
+      --accent-tertiary: #ec4899;
+      --accent-amber: #f59e0b;
+      --accent-rose: #e11d48;
+      --accent-glow: rgba(192, 132, 252, 0.25);
+      --text-main: #faf5ff;
+      --text-muted: #d8b4fe;
+      --header-bg: rgba(20, 13, 37, 0.92);
+      --nav-bg: rgba(20, 13, 37, 0.85);
+      --grid-line: rgba(192, 132, 252, 0.02);
+      --body-grad-1: rgba(192, 132, 252, 0.05);
+      --body-grad-2: rgba(236, 72, 153, 0.04);
+    }
+
+    [data-theme="solar-ember"] {
+      --bg-primary: #120c08;
+      --bg-card: #1c130d;
+      --bg-card-border: #382518;
+      --bg-card-hover: #4d3321;
+      --accent-primary: #f59e0b;
+      --accent-secondary: #f97316;
+      --accent-tertiary: #eab308;
+      --accent-amber: #d97706;
+      --accent-rose: #ef4444;
+      --accent-glow: rgba(245, 158, 11, 0.25);
+      --text-main: #fffbeb;
+      --text-muted: #fde68a;
+      --header-bg: rgba(28, 19, 13, 0.92);
+      --nav-bg: rgba(28, 19, 13, 0.85);
+      --grid-line: rgba(245, 158, 11, 0.02);
+      --body-grad-1: rgba(245, 158, 11, 0.05);
+      --body-grad-2: rgba(249, 115, 22, 0.04);
+    }
+
+    [data-theme="crimson-ruby"] {
+      --bg-primary: #12060b;
+      --bg-card: #1d0c13;
+      --bg-card-border: #3a1725;
+      --bg-card-hover: #4e1f32;
+      --accent-primary: #f43f5e;
+      --accent-secondary: #e11d48;
+      --accent-tertiary: #fb7185;
+      --accent-amber: #f59e0b;
+      --accent-rose: #be123c;
+      --accent-glow: rgba(244, 63, 94, 0.25);
+      --text-main: #fff1f2;
+      --text-muted: #fecdd3;
+      --header-bg: rgba(29, 12, 19, 0.92);
+      --nav-bg: rgba(29, 12, 19, 0.85);
+      --grid-line: rgba(244, 63, 94, 0.02);
+      --body-grad-1: rgba(244, 63, 94, 0.05);
+      --body-grad-2: rgba(225, 29, 72, 0.04);
+    }
+
+    [data-theme="stealth-slate"] {
+      --bg-primary: #090a0e;
+      --bg-card: #111318;
+      --bg-card-border: #222630;
+      --bg-card-hover: #2e3442;
+      --accent-primary: #e2e8f0;
+      --accent-secondary: #94a3b8;
+      --accent-tertiary: #38bdf8;
+      --accent-amber: #fbbf24;
+      --accent-rose: #f87171;
+      --accent-glow: rgba(226, 232, 240, 0.2);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --header-bg: rgba(17, 19, 24, 0.92);
+      --nav-bg: rgba(17, 19, 24, 0.85);
+      --grid-line: rgba(226, 232, 240, 0.02);
+      --body-grad-1: rgba(226, 232, 240, 0.03);
+      --body-grad-2: rgba(148, 163, 184, 0.03);
+    }
+
+    [data-theme="nordic-frost"] {
+      --bg-primary: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-card-border: #e2e8f0;
+      --bg-card-hover: #f1f5f9;
+      --accent-primary: #0284c7;
+      --accent-secondary: #4f46e5;
+      --accent-tertiary: #059669;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+      --accent-glow: rgba(2, 132, 199, 0.15);
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --header-bg: rgba(255, 255, 255, 0.94);
+      --nav-bg: rgba(248, 250, 252, 0.9);
+      --grid-line: rgba(15, 23, 42, 0.03);
+      --body-grad-1: rgba(2, 132, 199, 0.04);
+      --body-grad-2: rgba(79, 70, 229, 0.03);
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       BASE STYLES & DYNAMIC MESH BACKGROUND
+       ══════════════════════════════════════════════════════════════ */
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      background-image: 
+        radial-gradient(at 0% 0%, var(--body-grad-1) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, var(--body-grad-2) 0px, transparent 50%),
+        linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
     ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #080d1a; }
-    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #00f0ff; }
+    ::-webkit-scrollbar-track { background: var(--bg-primary); }
+    ::-webkit-scrollbar-thumb { background: var(--bg-card-border); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent-primary); }
+
+    ::selection {
+      background: var(--accent-primary);
+      color: #050811;
+    }
+    [data-theme="nordic-frost"] ::selection {
+      background: var(--accent-primary);
+      color: #ffffff;
+    }
+
+    /* THEME CORE UTILITIES */
+    .bg-cyber-bg { background-color: var(--bg-primary) !important; }
+    .bg-cyber-card { background-color: var(--bg-card) !important; }
+    .border-cyber-cardborder { border-color: var(--bg-card-border) !important; }
+    .hover\:bg-cyber-cardhover:hover { background-color: var(--bg-card-hover) !important; }
+    .text-cyber-cyan { color: var(--accent-primary) !important; }
+    .text-cyber-emerald { color: var(--accent-tertiary) !important; }
+    .text-cyber-violet { color: var(--accent-secondary) !important; }
+
+    .glow-theme { box-shadow: 0 0 25px var(--accent-glow); }
     .glow-cyan { box-shadow: 0 0 20px rgba(0, 240, 255, 0.2); }
     .glow-violet { box-shadow: 0 0 20px rgba(168, 85, 247, 0.2); }
     .glow-emerald { box-shadow: 0 0 20px rgba(0, 255, 136, 0.2); }
     .glow-amber { box-shadow: 0 0 20px rgba(245, 158, 11, 0.2); }
-    .scanline { position: relative; }
-    .scanline::after {
-      content: " ";
-      display: block;
-      position: absolute;
-      top: 0; left: 0; bottom: 0; right: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 255, 0, 0.02));
-      z-index: 20;
-      background-size: 100% 2px, 3px 100%;
-      pointer-events: none;
+
+    /* CARD HOVER LIFT & TRANSITIONS */
+    .card-interactive {
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
     }
+    .card-interactive:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 0 20px var(--accent-glow);
+      border-color: var(--accent-primary);
+    }
+
+    .btn-lift {
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .btn-lift:hover {
+      transform: translateY(-1px);
+    }
+    .btn-lift:active {
+      transform: translateY(1px);
+    }
+
+    /* ACADEMIC PROSE TYPOGRAPHY */
     .academic-prose h1 { font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem; color: #f8fafc; font-family: serif; text-align: center; }
-    .academic-prose h2 { font-size: 1.15rem; font-weight: bold; margin-top: 1.25rem; margin-bottom: 0.5rem; color: #38bdf8; border-bottom: 1px solid #1e293b; padding-bottom: 0.25rem; font-family: serif; }
-    .academic-prose h3 { font-size: 1rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.25rem; color: #a5f3fc; font-family: serif; }
+    .academic-prose h2 { font-size: 1.15rem; font-weight: bold; margin-top: 1.25rem; margin-bottom: 0.5rem; color: var(--accent-primary); border-bottom: 1px solid var(--bg-card-border); padding-bottom: 0.25rem; font-family: serif; }
+    .academic-prose h3 { font-size: 1rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.25rem; color: var(--accent-tertiary); font-family: serif; }
     .academic-prose p { margin-bottom: 0.85rem; line-height: 1.7; text-align: justify; color: #cbd5e1; font-family: serif; font-size: 0.95rem; }
     .academic-prose ul { list-style-type: none; padding-left: 0; margin-top: 0.5rem; }
     .academic-prose li { padding-left: 1.5rem; text-indent: -1.5rem; margin-bottom: 0.5rem; font-size: 0.85rem; color: #94a3b8; font-family: serif; }
+
+    /* LIGHT MODE ADAPTATION (NORDIC FROST) */
+    [data-theme="nordic-frost"] .bg-slate-950 { background-color: #f1f5f9 !important; color: #0f172a !important; }
+    [data-theme="nordic-frost"] .bg-slate-900 { background-color: #ffffff !important; color: #0f172a !important; }
+    [data-theme="nordic-frost"] .bg-slate-800 { background-color: #f8fafc !important; color: #1e293b !important; }
+    [data-theme="nordic-frost"] .border-slate-800,
+    [data-theme="nordic-frost"] .border-slate-700 { border-color: #e2e8f0 !important; }
+    [data-theme="nordic-frost"] .text-slate-200,
+    [data-theme="nordic-frost"] .text-slate-100,
+    [data-theme="nordic-frost"] .text-slate-300 { color: #0f172a !important; }
+    [data-theme="nordic-frost"] .text-slate-400 { color: #475569 !important; }
+    [data-theme="nordic-frost"] .text-slate-500 { color: #64748b !important; }
+    [data-theme="nordic-frost"] input,
+    [data-theme="nordic-frost"] select,
+    [data-theme="nordic-frost"] textarea {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+      border-color: #cbd5e1 !important;
+    }
+    [data-theme="nordic-frost"] input:focus,
+    [data-theme="nordic-frost"] select:focus,
+    [data-theme="nordic-frost"] textarea:focus {
+      border-color: var(--accent-primary) !important;
+      box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2) !important;
+    }
+    [data-theme="nordic-frost"] .academic-prose h1,
+    [data-theme="nordic-frost"] .academic-prose h2,
+    [data-theme="nordic-frost"] .academic-prose h3 {
+      color: #0f172a !important;
+    }
+    [data-theme="nordic-frost"] .academic-prose p,
+    [data-theme="nordic-frost"] .academic-prose li {
+      color: #334155 !important;
+    }
   </style>
 </head>
 <body class="text-slate-200 antialiased min-h-screen flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+
+  <!-- FLOATING TOAST NOTIFICATION STACK (TOP-RIGHT) -->
+  <div id="toast-container" class="fixed top-4 right-4 z-[9999] space-y-2.5 pointer-events-none max-w-sm w-full"></div>
+
+  <!-- TOP HEADER WORKBENCH BAR -->
+  <header class="border-b border-cyber-cardborder bg-cyber-card/90 px-4 md:px-6 py-2.5 flex flex-wrap items-center justify-between sticky top-0 z-50 backdrop-blur-xl shadow-lg transition-colors duration-200">
+    
     <!-- Brand & Kernel Badge -->
     <div class="flex items-center space-x-3.5">
-      <div class="w-9 h-9 rounded-lg bg-gradient-to-tr from-cyan-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/25 font-mono font-bold text-sm">
-        &gt;_
+      <div class="relative w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/25 font-mono font-bold text-sm ring-1 ring-white/20">
+        <span>&gt;_</span>
+        <span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-slate-950 animate-pulse"></span>
       </div>
       <div>
         <div class="flex items-center space-x-2">
-          <span class="font-bold text-sm tracking-wide text-white uppercase font-mono">ScholarForge OS</span>
-          <span class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 font-mono">v2.1 ULTRA</span>
-          <span class="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/30 font-mono">STUDIO SUITE</span>
+          <span class="font-extrabold text-sm tracking-wide text-white uppercase font-mono">ScholarForge OS</span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 font-mono font-bold">v2.2 PRO</span>
+          <span class="hidden sm:inline-block text-[10px] px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/30 font-mono">AUTONOMOUS STUDIO</span>
         </div>
         <p class="text-[11px] text-slate-400 font-mono">Full-Lifecycle Systematic Review & Scientific Typesetting Suite</p>
       </div>
     </div>
 
     <!-- Center Quick Publication Deck -->
-    <div class="hidden lg:flex items-center space-x-2 font-mono text-xs">
-      <span class="text-[10px] text-slate-500 uppercase mr-1">Exports:</span>
+    <div class="hidden xl:flex items-center space-x-2 font-mono text-xs">
+      <span class="text-[10px] text-slate-500 uppercase mr-1 font-bold">Exports:</span>
       <a id="hdr-dl-docx" href="#" onclick="downloadActiveDocx(event)" download
-         class="px-2.5 py-1 rounded bg-blue-500/10 hover:bg-blue-500/25 border border-blue-500/30 text-blue-300 flex items-center space-x-1.5 transition">
+         class="btn-lift px-2.5 py-1 rounded-md bg-blue-500/10 hover:bg-blue-500/25 border border-blue-500/30 text-blue-300 flex items-center space-x-1.5 transition">
         <i class="fa-solid fa-file-word"></i> <span>WORD .DOCX</span>
       </a>
       <a id="hdr-dl-pdf" href="#" onclick="downloadActivePdf(event)" download
-         class="px-2.5 py-1 rounded bg-emerald-500/10 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 flex items-center space-x-1.5 transition">
+         class="btn-lift px-2.5 py-1 rounded-md bg-emerald-500/10 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 flex items-center space-x-1.5 transition">
         <i class="fa-solid fa-file-pdf"></i> <span>TYPST .PDF</span>
       </a>
       <a id="hdr-dl-latex" href="#" onclick="downloadActiveLatex(event)" download
-         class="px-2.5 py-1 rounded bg-purple-500/10 hover:bg-purple-500/25 border border-purple-500/30 text-purple-300 flex items-center space-x-1.5 transition">
+         class="btn-lift px-2.5 py-1 rounded-md bg-purple-500/10 hover:bg-purple-500/25 border border-purple-500/30 text-purple-300 flex items-center space-x-1.5 transition">
         <i class="fa-solid fa-file-zipper"></i> <span>OVERLEAF .ZIP</span>
       </a>
       <a id="hdr-dl-excel" href="/api/extraction/export-excel" download
-         class="px-2.5 py-1 rounded bg-teal-500/10 hover:bg-teal-500/25 border border-teal-500/30 text-teal-300 flex items-center space-x-1.5 transition">
+         class="btn-lift px-2.5 py-1 rounded-md bg-teal-500/10 hover:bg-teal-500/25 border border-teal-500/30 text-teal-300 flex items-center space-x-1.5 transition">
         <i class="fa-solid fa-file-excel"></i> <span>EXCEL .XLSX</span>
       </a>
       <a id="hdr-dl-prisma" href="/api/download/prisma_flowchart.svg" download
-         class="px-2.5 py-1 rounded bg-amber-500/10 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 flex items-center space-x-1.5 transition">
+         class="btn-lift px-2.5 py-1 rounded-md bg-amber-500/10 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 flex items-center space-x-1.5 transition">
         <i class="fa-solid fa-diagram-project"></i> <span>PRISMA .SVG</span>
       </a>
     </div>
 
     <!-- Live Telemetry Badges & Config -->
-    <div class="flex items-center space-x-3 text-xs font-mono">
-      <div class="flex items-center space-x-2 px-2.5 py-1 rounded-md bg-slate-900 border border-cyber-cardborder">
+    <div class="flex items-center space-x-2.5 text-xs font-mono">
+      
+      <!-- Model Telemetry -->
+      <div class="hidden sm:flex items-center space-x-2 px-2.5 py-1 rounded-md bg-slate-900 border border-cyber-cardborder shadow-sm">
         <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
         <span class="text-slate-300 font-medium" id="hud-model">gemini-3.8-flash</span>
         <span class="text-slate-600">::</span>
         <i class="fa-solid fa-satellite text-cyan-400" title="Google Search Grounding"></i>
       </div>
-      <div class="flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px]">
+
+      <!-- Zero-Billing MCP Badge -->
+      <div class="hidden md:flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px]">
         <i class="fa-solid fa-shield-halved"></i>
         <span>ZERO-BILLING MCP</span>
       </div>
+
+      <!-- Active Alerts Button -->
       <button id="btn-active-alerts" onclick="openAlertsModal()" class="hidden px-2.5 py-1 rounded-md bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/50 text-rose-300 font-mono text-[11px] animate-pulse flex items-center space-x-1.5" title="Active API & Circuit Breaker Alerts">
         <i class="fa-solid fa-triangle-exclamation text-rose-400"></i>
         <span id="alert-counter-text">0 ALERTS</span>
       </button>
-      <button onclick="openJevTourModal()" id="btn-jev-deck" class="px-2.5 py-1 rounded-md bg-indigo-500/15 hover:bg-indigo-500/30 border border-indigo-500/40 text-indigo-300 transition flex items-center space-x-1.5 font-mono text-[11px]" title="JEV Decision Engine & Cloud API Router">
+
+      <!-- JEV Router Button -->
+      <button onclick="openJevTourModal()" id="btn-jev-deck" class="btn-lift px-2.5 py-1 rounded-md bg-indigo-500/15 hover:bg-indigo-500/30 border border-indigo-500/40 text-indigo-300 transition flex items-center space-x-1.5 font-mono text-[11px]" title="JEV Decision Engine & Cloud API Router">
         <i class="fa-solid fa-bolt text-amber-400"></i>
-        <span id="jev-badge-profile" class="font-bold">JEV: AUTO-SELECT</span>
-        <span id="jev-badge-domain" class="text-[9px] px-1.5 py-0.5 rounded bg-indigo-950 text-indigo-200 border border-indigo-700 font-semibold">BIOMEDICAL</span>
+        <span id="jev-badge-profile" class="font-bold">JEV: AUTO</span>
+        <span id="jev-badge-domain" class="text-[9px] px-1.5 py-0.5 rounded bg-indigo-950 text-indigo-200 border border-indigo-700 font-semibold hidden lg:inline-block">BIOMEDICAL</span>
       </button>
-      <button onclick="openProjectStorageModal()" id="btn-hdr-storage" class="px-2.5 py-1 rounded-md bg-blue-500/15 hover:bg-blue-500/30 border border-blue-500/40 text-blue-300 transition flex items-center space-x-1.5 font-mono text-[11px]" title="Project Folder Setup & Windows Storage Browser">
+
+      <!-- COLOR THEME SWITCHER DROPDOWN -->
+      <div class="relative" id="theme-selector-container">
+        <button id="btn-theme-switcher" onclick="toggleThemeDropdown(event)" 
+                class="btn-lift px-2.5 py-1 rounded-md bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-cyan-500/50 text-slate-200 transition flex items-center space-x-2 text-xs font-mono shadow-sm cursor-pointer" 
+                title="Switch Color Theme (Alt+T)">
+          <i class="fa-solid fa-palette text-cyan-400" id="theme-btn-icon"></i>
+          <span id="theme-btn-label" class="font-bold hidden sm:inline-block">CYBER NEON</span>
+          <span class="flex items-center -space-x-1" id="theme-active-dots">
+            <span class="w-2.5 h-2.5 rounded-full inline-block border border-black/30 shadow-sm" style="background:#00f0ff;"></span>
+            <span class="w-2.5 h-2.5 rounded-full inline-block border border-black/30 shadow-sm" style="background:#a855f7;"></span>
+          </span>
+          <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
+        </button>
+        
+        <!-- Theme Popover Menu -->
+        <div id="theme-dropdown-menu" 
+             class="hidden absolute right-0 mt-2 w-80 rounded-2xl border border-slate-700 bg-slate-950/95 p-3 z-50 shadow-2xl backdrop-blur-2xl font-mono text-xs space-y-2 animate-in fade-in zoom-in-95 duration-150">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-800 text-[11px] text-slate-400">
+            <span class="font-bold uppercase tracking-wider text-slate-300 flex items-center space-x-1.5">
+              <i class="fa-solid fa-wand-magic-sparkles text-cyan-400"></i>
+              <span>Theme Studio</span>
+            </span>
+            <span class="text-[9px] px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 font-bold">8 PRESETS</span>
+          </div>
+          
+          <div class="grid grid-cols-1 gap-1.5 max-h-80 overflow-y-auto pr-1" id="theme-options-grid">
+            <!-- Rendered dynamically by JavaScript -->
+          </div>
+          
+          <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-slate-500">
+            <span>Shortcut: <kbd class="px-1 py-0.5 bg-slate-800 rounded text-slate-400">Alt+T</kbd></span>
+            <span class="text-cyan-400">Instant Live Preview</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Storage Setup Button -->
+      <button onclick="openProjectStorageModal()" id="btn-hdr-storage" class="btn-lift px-2.5 py-1 rounded-md bg-blue-500/15 hover:bg-blue-500/30 border border-blue-500/40 text-blue-300 transition flex items-center space-x-1.5 font-mono text-[11px]" title="Project Folder Setup & Windows Storage Browser">
         <i class="fa-solid fa-folder-gear text-cyan-400"></i>
-        <span>STORAGE SETUP</span>
+        <span class="hidden sm:inline">STORAGE</span>
       </button>
-      <button onclick="openNewProjectModal()" class="px-3 py-1 rounded-md bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-bold text-xs flex items-center space-x-1.5 shadow-lg glow-emerald transition">
+
+      <!-- New Project Action -->
+      <button onclick="openNewProjectModal()" class="btn-lift px-3 py-1 rounded-md bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-bold text-xs flex items-center space-x-1.5 shadow-lg glow-emerald transition">
         <i class="fa-solid fa-plus-circle"></i>
-        <span>NEW REVIEW PROJECT</span>
+        <span class="hidden md:inline">NEW REVIEW</span>
       </button>
-      <button onclick="openSettingsModal()" class="px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 transition flex items-center space-x-1">
+
+      <!-- Config Settings -->
+      <button onclick="openSettingsModal()" class="btn-lift px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 transition flex items-center space-x-1">
         <i class="fa-solid fa-sliders text-cyan-400"></i>
-        <span>CONFIG</span>
+        <span class="hidden sm:inline">CONFIG</span>
       </button>
     </div>
   </header>
 
-  <!-- Main Navigation Tabs Bar -->
-  <nav class="border-b border-cyber-cardborder bg-cyber-card/70 px-5 flex items-center justify-between sticky top-[57px] z-40 backdrop-blur">
-    <div class="flex space-x-1 overflow-x-auto text-xs font-mono py-1.5">
-      <button onclick="switchTab('start')" id="tab-start" class="px-4 py-2 rounded-md font-bold flex items-center space-x-2 transition bg-gradient-to-r from-cyan-500/25 via-blue-500/25 to-violet-500/25 text-cyan-300 border border-cyan-400/50 shadow-md shadow-cyan-500/20">
-          <i class="fa-solid fa-sparkles text-cyan-300"></i>
-          <span>✨ START NEW REVIEW</span>
-        </button>
-        <button onclick="switchTab('studio')" id="tab-studio" class="px-3.5 py-2 rounded-md font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 flex items-center space-x-2 transition border border-transparent">
-        <i class="fa-solid fa-pen-nib"></i>
-        <span>MANUSCRIPT & PDF STUDIO</span>
+  <!-- MAIN NAVIGATION TABS BAR -->
+  <nav class="border-b border-cyber-cardborder bg-cyber-card/75 px-4 md:px-5 flex items-center justify-between sticky top-[53px] z-40 backdrop-blur-md transition-colors duration-200">
+    <div class="flex space-x-1 overflow-x-auto text-xs font-mono py-1.5 no-scrollbar">
+      
+      <button onclick="switchTab('start')" id="tab-start" class="px-3.5 py-1.5 rounded-lg font-bold flex items-center space-x-1.5 transition bg-gradient-to-r from-cyan-500/25 via-blue-500/25 to-violet-500/25 text-cyan-300 border border-cyan-400/50 shadow-md shadow-cyan-500/20 whitespace-nowrap">
+        <span class="text-[10px] px-1 rounded bg-cyan-400/20 text-cyan-300 font-mono">1</span>
+        <i class="fa-solid fa-sparkles text-cyan-300"></i>
+        <span>START REVIEW</span>
       </button>
-      <button onclick="switchTab('figures')" id="tab-figures" class="px-3.5 py-2 rounded-md font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 flex items-center space-x-2 transition border border-transparent">
+
+      <button onclick="switchTab('studio')" id="tab-studio" class="px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 flex items-center space-x-1.5 transition border border-transparent whitespace-nowrap">
+        <span class="text-[10px] px-1 rounded bg-slate-800 text-slate-400 font-mono">2</span>
+        <i class="fa-solid fa-pen-nib text-blue-400"></i>
+        <span>MANUSCRIPT STUDIO</span>
+      </button>
+
+      <button onclick="switchTab('figures')" id="tab-figures" class="px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 flex items-center space-x-1.5 transition border border-transparent whitespace-nowrap">
+        <span class="text-[10px] px-1 rounded bg-slate-800 text-slate-400 font-mono">3</span>
         <i class="fa-solid fa-chart-line text-purple-400"></i>
-        <span>FIGURE & CODE STUDIO</span>
+        <span>FIGURES & CODE</span>
       </button>
-      <button onclick="switchTab('excel')" id="tab-excel" class="px-3.5 py-2 rounded-md font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 flex items-center space-x-2 transition border border-transparent">
+
+      <button onclick="switchTab('excel')" id="tab-excel" class="px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 flex items-center space-x-1.5 transition border border-transparent whitespace-nowrap">
+        <span class="text-[10px] px-1 rounded bg-slate-800 text-slate-400 font-mono">4</span>
         <i class="fa-solid fa-table text-teal-400"></i>
-        <span>EXCEL & EVIDENCE GRID</span>
+        <span>EVIDENCE GRID</span>
       </button>
-      <button onclick="switchTab('search')" id="tab-search" class="px-3.5 py-2 rounded-md font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 flex items-center space-x-2 transition border border-transparent">
+
+      <button onclick="switchTab('search')" id="tab-search" class="px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 flex items-center space-x-1.5 transition border border-transparent whitespace-nowrap">
+        <span class="text-[10px] px-1 rounded bg-slate-800 text-slate-400 font-mono">5</span>
         <i class="fa-solid fa-magnifying-glass text-blue-400"></i>
         <span>LITERATURE INGESTION</span>
       </button>
-      <button onclick="switchTab('audit')" id="tab-audit" class="px-3.5 py-2 rounded-md font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 flex items-center space-x-2 transition border border-transparent">
+
+      <button onclick="switchTab('audit')" id="tab-audit" class="px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 flex items-center space-x-1.5 transition border border-transparent whitespace-nowrap">
+        <span class="text-[10px] px-1 rounded bg-slate-800 text-slate-400 font-mono">6</span>
         <i class="fa-solid fa-shield-virus text-amber-400"></i>
         <span>7-PERSPECTIVE AUDIT</span>
       </button>
-      <button onclick="switchTab('explorer')" id="tab-explorer" class="px-3.5 py-2 rounded-md font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 flex items-center space-x-2 transition border border-transparent">
+
+      <button onclick="switchTab('explorer')" id="tab-explorer" class="px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 flex items-center space-x-1.5 transition border border-transparent whitespace-nowrap">
+        <span class="text-[10px] px-1 rounded bg-slate-800 text-slate-400 font-mono">7</span>
         <i class="fa-solid fa-folder-tree text-indigo-400"></i>
         <span>WORKSPACE TREE</span>
       </button>
-      <button onclick="switchTab('detector')" id="tab-detector" class="px-3.5 py-2 rounded-md font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 flex items-center space-x-2 transition border border-transparent">
+
+      <button onclick="switchTab('detector')" id="tab-detector" class="px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 flex items-center space-x-1.5 transition border border-transparent whitespace-nowrap">
+        <span class="text-[10px] px-1 rounded bg-slate-800 text-slate-400 font-mono">8</span>
         <i class="fa-solid fa-fingerprint text-rose-400"></i>
-        <span>AI & PLAGIARISM CHECKER</span>
+        <span>AI DETECTOR</span>
       </button>
-      <button onclick="switchTab('grounded')" id="tab-grounded" class="px-3.5 py-2 rounded-md font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 flex items-center space-x-2 transition border border-transparent">
+
+      <button onclick="switchTab('grounded')" id="tab-grounded" class="px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 flex items-center space-x-1.5 transition border border-transparent whitespace-nowrap">
+        <span class="text-[10px] px-1 rounded bg-slate-800 text-slate-400 font-mono">9</span>
         <i class="fa-solid fa-brain text-amber-400"></i>
-        <span>GROUNDED AI STUDIO</span>
+        <span>GROUNDED AI</span>
       </button>
-      <button onclick="switchTab('jev')" id="tab-jev" class="px-3.5 py-2 rounded-md font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 flex items-center space-x-2 transition border border-transparent">
+
+      <button onclick="switchTab('jev')" id="tab-jev" class="px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 flex items-center space-x-1.5 transition border border-transparent whitespace-nowrap">
+        <span class="text-[10px] px-1 rounded bg-slate-800 text-slate-400 font-mono">0</span>
         <i class="fa-solid fa-network-wired text-cyan-400"></i>
-        <span>API REGISTRY & JEV MATRIX</span>
+        <span>APIS & JEV MATRIX</span>
       </button>
     </div>
 
     <!-- Active Review Selector & Storage Shortcuts -->
-    <div class="flex items-center space-x-2 text-xs font-mono">
-      <span class="text-slate-500 text-[11px]">ACTIVE REVIEW:</span>
-      <select id="review-topic-selector" onchange="switchProject(this.value)" class="bg-slate-950 border border-slate-800 rounded px-2.5 py-1 text-slate-200 focus:outline-none focus:border-cyan-500 font-mono text-xs font-semibold max-w-[220px]"></select>
+    <div class="flex items-center space-x-2 text-xs font-mono ml-2 shrink-0">
+      <span class="text-slate-500 text-[11px] hidden xl:inline">ACTIVE REVIEW:</span>
+      <select id="review-topic-selector" onchange="switchProject(this.value)" class="bg-slate-950 border border-slate-800 rounded px-2.5 py-1 text-slate-200 focus:outline-none focus:border-cyan-500 font-mono text-xs font-semibold max-w-[180px] md:max-w-[220px]"></select>
       <button onclick="openProjectStorageModal()" title="Create or select project folder in Windows storage" class="px-2 py-1 rounded bg-blue-950 hover:bg-blue-900 border border-blue-700 text-blue-300 transition cursor-pointer text-xs flex items-center space-x-1">
         <i class="fa-solid fa-folder-gear text-cyan-400"></i>
         <span class="hidden sm:inline">Storage</span>
@@ -920,12 +1232,23 @@
           <span class="text-slate-500" id="editor-save-status">Saved</span>
         </div>
 
-        <!-- Action Buttons -->
+        <!-- Action Buttons & Productivity Deck -->
         <div class="flex items-center space-x-2">
+          <button onclick="copyManuscriptMarkdown()" id="btn-copy-manuscript" class="btn-lift px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-bold flex items-center space-x-1.5 transition text-xs" title="Copy full markdown text">
+            <i class="fa-regular fa-copy text-cyan-400"></i>
+            <span>COPY MD</span>
+          </button>
+          <div class="flex items-center space-x-0.5 bg-slate-900 p-0.5 rounded-lg border border-slate-800 text-xs">
+            <button onclick="adjustEditorFontSize(-1)" class="px-2 py-1 text-slate-400 hover:text-slate-200 rounded hover:bg-slate-800" title="Decrease font size">A-</button>
+            <button onclick="adjustEditorFontSize(1)" class="px-2 py-1 text-slate-400 hover:text-slate-200 rounded hover:bg-slate-800" title="Increase font size">A+</button>
+          </div>
+          <button onclick="toggleManuscriptFullscreen()" id="btn-fullscreen-toggle" class="btn-lift px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 transition text-xs" title="Toggle Fullscreen Reading View">
+            <i class="fa-solid fa-expand text-indigo-400"></i>
+          </button>
           <button onclick="saveAndRecompileManuscript()" id="btn-save-recompile"
-                  class="px-4 py-1.5 rounded bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold flex items-center space-x-2 glow-cyan transition">
+                  class="btn-lift px-4 py-1.5 rounded-lg bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold flex items-center space-x-2 glow-cyan transition">
             <i class="fa-solid fa-floppy-disk"></i>
-            <span>SAVE & RECOMPILE ALL (DOCX, PDF, LATEX)</span>
+            <span>SAVE & RECOMPILE</span>
           </button>
         </div>
       </div>
@@ -2195,7 +2518,34 @@
     </div>
   </div>
 
-  <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2 font-mono text-xs max-w-sm pointer-events-none"></div>
+    <!-- FIGURE HIGH-RES LIGHTBOX MODAL -->
+  <div id="modal-figure-lightbox" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex flex-col p-4 md:p-6 animate-in fade-in duration-200">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-800 text-xs font-mono">
+      <div class="flex items-center space-x-2.5">
+        <span class="w-3 h-3 rounded-full bg-cyan-400 animate-pulse"></span>
+        <h3 id="lightbox-fig-title" class="font-bold text-slate-100 text-sm">Figure Inspection</h3>
+        <span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/40 text-[10px] font-mono font-bold">300 DPI VECTOR</span>
+      </div>
+      <div class="flex items-center space-x-2">
+        <a id="lightbox-dl-svg" href="#" download class="btn-lift px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold flex items-center space-x-1.5 transition">
+          <i class="fa-solid fa-file-arrow-down"></i> <span>DOWNLOAD SVG</span>
+        </a>
+        <a id="lightbox-dl-png" href="#" download class="btn-lift px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center space-x-1.5 transition">
+          <i class="fa-solid fa-image"></i> <span>PNG</span>
+        </a>
+        <button onclick="closeFigureLightbox()" class="btn-lift px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-rose-900/60 text-slate-400 hover:text-rose-200 border border-slate-700 transition">
+          <i class="fa-solid fa-xmark"></i> <span>CLOSE (ESC)</span>
+        </button>
+      </div>
+    </div>
+    <div class="flex-1 flex items-center justify-center p-4 overflow-hidden relative">
+      <img id="lightbox-fig-img" src="" alt="Scientific figure" class="max-w-full max-h-full object-contain rounded-xl border border-slate-800 shadow-2xl transition-transform duration-200">
+    </div>
+    <div class="pt-3 border-t border-slate-800 text-center text-xs font-mono text-slate-400 flex items-center justify-between">
+      <span id="lightbox-fig-caption" class="text-slate-300 truncate max-w-3xl">Publication-grade 300 DPI vector graphic.</span>
+      <span class="text-[11px] text-slate-500">Press ESC or click close</span>
+    </div>
+  </div>
 
   <!-- JavaScript Application Logic -->
   <script>
@@ -2496,27 +2846,147 @@
       await loadGatewayApis();
       await checkGatewayAlerts();
       setInterval(checkGatewayAlerts, 10000);
+      applyTheme(currentTheme, false);
+      initKeyboardShortcuts();
     });
 
-    function showToast(msg, type = "info") {
-      const container = document.getElementById("toast-container");
-      const el = document.createElement("div");
-      const colors = {
-        info: "bg-slate-900 border-cyan-500 text-cyan-300",
-        success: "bg-slate-900 border-emerald-500 text-emerald-300",
-        warning: "bg-slate-900 border-amber-500 text-amber-300",
-        error: "bg-slate-900 border-rose-500 text-rose-300"
-      };
-      el.className = `p-3 rounded-lg border shadow-2xl flex items-center space-x-2 transform transition-all duration-300 translate-y-2 opacity-0 pointer-events-auto ${colors[type] || colors.info}`;
-      el.innerHTML = `<i class="fa-solid fa-terminal text-sm"></i> <span>${msg}</span>`;
-      container.appendChild(el);
-      requestAnimationFrame(() => el.classList.remove("translate-y-2", "opacity-0"));
-      setTimeout(() => {
-        el.classList.add("translate-y-2", "opacity-0");
-        setTimeout(() => el.remove(), 300);
-      }, 4000);
+    // ══════════════════════════════════════════════════════════════
+    // THEME ENGINE CONTROLLER (8 ULTRA PRESETS)
+    // ══════════════════════════════════════════════════════════════
+    const THEMES = [
+      { id: "cyber-neon", name: "Cyber Neon", cat: "Signature Dark", tag: "DEFAULT", desc: "Obsidian blacks with electric cyan & neon violet luminescence", colors: ["#00f0ff", "#a855f7", "#00ff88", "#050811"], icon: "fa-atom" },
+      { id: "deep-ocean", name: "Midnight Sapphire", cat: "Oceanic Dark", tag: "POPULAR", desc: "Royal navy and cold cobalt blue with sky ice luminescence", colors: ["#38bdf8", "#3b82f6", "#06b6d4", "#070d1e"], icon: "fa-water" },
+      { id: "emerald-matrix", name: "Emerald Matrix", cat: "Bio-Science", tag: "NATURE", desc: "Deep obsidian forest with bioluminescent mint & emerald accents", colors: ["#00ff88", "#10b981", "#14b8a6", "#04120a"], icon: "fa-dna" },
+      { id: "quantum-violet", name: "Amethyst Nebula", cat: "Quantum Luxury", tag: "COSMIC", desc: "Cosmic deep purple with radiant lavender amethyst & pink starlight", colors: ["#c084fc", "#9333ea", "#ec4899", "#0b0616"], icon: "fa-meteor" },
+      { id: "solar-ember", name: "Solar Ember", cat: "Warm Dark", tag: "BRONZE", desc: "Warm volcanic charcoal with honey amber & sunset orange glow", colors: ["#f59e0b", "#f97316", "#eab308", "#120c08"], icon: "fa-fire" },
+      { id: "crimson-ruby", name: "Crimson Rose", cat: "Cyberpunk Ruby", tag: "VIBRANT", desc: "Dark onyx velvet with intense ruby red & fiery rose embers", colors: ["#f43f5e", "#e11d48", "#fb7185", "#12060b"], icon: "fa-gem" },
+      { id: "stealth-slate", name: "Titanium Stealth", cat: "Matte Minimalist", tag: "DEV", desc: "Pure matte graphite slate with platinum white & laser blue lines", colors: ["#e2e8f0", "#94a3b8", "#38bdf8", "#090a0e"], icon: "fa-terminal" },
+      { id: "nordic-frost", name: "Nordic Frost", cat: "Laboratory Light", tag: "LIGHT", desc: "Crisp alabaster white with academic sapphire typography & silver borders", colors: ["#0284c7", "#4f46e5", "#059669", "#ffffff"], icon: "fa-sun" }
+    ];
+
+    let currentTheme = localStorage.getItem("scholarforge_theme") || "cyber-neon";
+
+    function applyTheme(themeId, notify = false) {
+      const t = THEMES.find(x => x.id === themeId) || THEMES[0];
+      currentTheme = t.id;
+      document.documentElement.setAttribute("data-theme", t.id);
+      if (t.id === "nordic-frost") {
+        document.documentElement.classList.remove("dark");
+      } else {
+        document.documentElement.classList.add("dark");
+      }
+      localStorage.setItem("scholarforge_theme", t.id);
+
+      // Update button labels & swatches
+      const label = document.getElementById("theme-btn-label");
+      if (label) label.innerText = t.name.toUpperCase();
+      const icon = document.getElementById("theme-btn-icon");
+      if (icon) icon.className = `fa-solid ${t.icon} text-cyber-cyan`;
+      const dots = document.getElementById("theme-active-dots");
+      if (dots) {
+        dots.innerHTML = `
+          <span class="w-2.5 h-2.5 rounded-full inline-block border border-black/30 shadow-sm" style="background:${t.colors[0]};"></span>
+          <span class="w-2.5 h-2.5 rounded-full inline-block border border-black/30 shadow-sm" style="background:${t.colors[1]};"></span>
+        `;
+      }
+
+      renderThemeMenu();
+
+      if (notify) {
+        showToast(`Theme switched to ${t.name}`, "success");
+      }
     }
 
+    function toggleThemeDropdown(e) {
+      if (e) e.stopPropagation();
+      const menu = document.getElementById("theme-dropdown-menu");
+      if (!menu) return;
+      const isHidden = menu.classList.contains("hidden");
+      if (isHidden) {
+        renderThemeMenu();
+        menu.classList.remove("hidden");
+      } else {
+        menu.classList.add("hidden");
+      }
+    }
+
+    function renderThemeMenu() {
+      const grid = document.getElementById("theme-options-grid");
+      if (!grid) return;
+      grid.innerHTML = THEMES.map(t => {
+        const isActive = t.id === currentTheme;
+        return `
+          <button onclick="applyTheme('${t.id}', true); toggleThemeDropdown();" 
+                  class="w-full text-left p-2.5 rounded-xl border transition flex items-center justify-between cursor-pointer ${isActive ? 'border-cyan-400 bg-cyan-500/15 shadow-md shadow-cyan-950/40' : 'border-slate-800/80 bg-slate-900/60 hover:bg-slate-800 hover:border-slate-700'}">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-inner shrink-0" style="background: ${t.colors[3]}; color: ${t.colors[0]}; border: 1px solid ${t.colors[0]}44;">
+                <i class="fa-solid ${t.icon}"></i>
+              </div>
+              <div class="truncate">
+                <div class="flex items-center space-x-1.5">
+                  <span class="font-bold text-slate-100 text-xs">${t.name}</span>
+                  <span class="text-[9px] px-1.5 py-0.2 rounded font-mono ${isActive ? 'bg-cyan-500/25 text-cyan-300 border border-cyan-500/40 font-bold' : 'bg-slate-800 text-slate-400'}">${t.tag}</span>
+                </div>
+                <p class="text-[10px] text-slate-400 truncate max-w-[170px]">${t.desc}</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 shrink-0">
+              <div class="flex items-center -space-x-1">
+                <span class="w-2.5 h-2.5 rounded-full inline-block border border-black/40 shadow-sm" style="background:${t.colors[0]}"></span>
+                <span class="w-2.5 h-2.5 rounded-full inline-block border border-black/40 shadow-sm" style="background:${t.colors[1]}"></span>
+                <span class="w-2.5 h-2.5 rounded-full inline-block border border-black/40 shadow-sm" style="background:${t.colors[2]}"></span>
+              </div>
+              ${isActive ? '<i class="fa-solid fa-circle-check text-cyan-400 text-sm"></i>' : ''}
+            </div>
+          </button>
+        `;
+      }).join('');
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // ENHANCED TOAST NOTIFICATION STACK
+    // ══════════════════════════════════════════════════════════════
+    function showToast(msg, type = "info", duration = 3500) {
+      const container = document.getElementById("toast-container");
+      if (!container) return;
+      const el = document.createElement("div");
+      const config = {
+        info: { icon: "fa-circle-info text-cyan-400", border: "border-cyan-500/60 shadow-cyan-950/50", bg: "from-slate-900 to-slate-950 text-cyan-100", bar: "bg-cyan-400" },
+        success: { icon: "fa-circle-check text-emerald-400", border: "border-emerald-500/60 shadow-emerald-950/50", bg: "from-slate-900 to-slate-950 text-emerald-100", bar: "bg-emerald-400" },
+        warning: { icon: "fa-triangle-exclamation text-amber-400", border: "border-amber-500/60 shadow-amber-950/50", bg: "from-slate-900 to-slate-950 text-amber-100", bar: "bg-amber-400" },
+        error: { icon: "fa-circle-xmark text-rose-400", border: "border-rose-500/60 shadow-rose-950/50", bg: "from-slate-900 to-slate-950 text-rose-100", bar: "bg-rose-400" }
+      };
+      const cfg = config[type] || config.info;
+      el.className = `p-3 rounded-xl border ${cfg.border} bg-gradient-to-r ${cfg.bg} shadow-2xl flex flex-col space-y-1.5 transform transition-all duration-300 translate-y-3 opacity-0 pointer-events-auto font-mono text-xs backdrop-blur-xl relative overflow-hidden`;
+      el.innerHTML = `
+        <div class="flex items-center justify-between space-x-2">
+          <div class="flex items-center space-x-2 truncate">
+            <i class="fa-solid ${cfg.icon} text-sm shrink-0"></i>
+            <span class="font-medium text-slate-100 truncate">${msg}</span>
+          </div>
+          <button onclick="this.closest('div').parentElement.remove()" class="text-slate-500 hover:text-slate-300 text-xs px-1">&times;</button>
+        </div>
+        <div class="w-full bg-slate-800/80 h-1 rounded-full overflow-hidden">
+          <div class="h-full ${cfg.bar} transition-all ease-linear" style="width: 100%; transition-duration: ${duration}ms;"></div>
+        </div>
+      `;
+      container.appendChild(el);
+      requestAnimationFrame(() => {
+        el.classList.remove("translate-y-3", "opacity-0");
+        const bar = el.querySelector(".transition-all");
+        if (bar) {
+          setTimeout(() => bar.style.width = "0%", 10);
+        }
+      });
+      setTimeout(() => {
+        el.classList.add("translate-y-3", "opacity-0");
+        setTimeout(() => el.remove(), 300);
+      }, duration);
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // TAB NAVIGATION CONTROLLER
+    // ══════════════════════════════════════════════════════════════
     function switchTab(tab) {
       const tabs = ['start', 'studio', 'figures', 'excel', 'search', 'audit', 'explorer', 'detector', 'grounded', 'jev'];
       tabs.forEach(t => {
@@ -2526,19 +2996,133 @@
         if (t === tab) {
           view.classList.remove('hidden');
           if (t === 'start') {
-            btn.className = "px-4 py-2 rounded-md font-bold flex items-center space-x-2 transition bg-gradient-to-r from-cyan-500/25 via-blue-500/25 to-violet-500/25 text-cyan-300 border border-cyan-400/50 shadow-md shadow-cyan-500/20";
+            btn.className = "px-3.5 py-1.5 rounded-lg font-bold flex items-center space-x-1.5 transition bg-gradient-to-r from-cyan-500/25 via-blue-500/25 to-violet-500/25 text-cyan-300 border border-cyan-400/50 shadow-md shadow-cyan-500/20 whitespace-nowrap";
           } else {
-            btn.className = "px-3.5 py-2 rounded-md font-semibold flex items-center space-x-2 transition bg-cyan-500/15 text-cyan-400 border border-cyan-500/30";
+            btn.className = "px-3 py-1.5 rounded-lg font-bold flex items-center space-x-1.5 transition bg-cyan-500/15 text-cyan-300 border border-cyan-500/40 shadow-sm whitespace-nowrap";
           }
         } else {
           view.classList.add('hidden');
           if (t === 'start') {
-            btn.className = "px-4 py-2 rounded-md font-bold flex items-center space-x-2 transition text-cyan-400 hover:text-cyan-200 hover:bg-cyan-500/10 border border-cyan-500/30";
+            btn.className = "px-3.5 py-1.5 rounded-lg font-medium flex items-center space-x-1.5 transition text-slate-400 hover:text-cyan-300 hover:bg-slate-900/60 border border-transparent whitespace-nowrap";
           } else {
-            btn.className = "px-3.5 py-2 rounded-md font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 flex items-center space-x-2 transition border border-transparent";
+            btn.className = "px-3 py-1.5 rounded-lg font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 flex items-center space-x-1.5 transition border border-transparent whitespace-nowrap";
           }
         }
       });
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // GLOBAL KEYBOARD SHORTCUTS & EVENT LISTENERS
+    // ══════════════════════════════════════════════════════════════
+    function initKeyboardShortcuts() {
+      document.addEventListener("keydown", (e) => {
+        const activeEl = document.activeElement;
+        const isTyping = activeEl && (activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA" || activeEl.isContentEditable);
+        
+        if (e.key === "Escape") {
+          document.querySelectorAll(".fixed.inset-0:not(.hidden)").forEach(m => m.classList.add("hidden"));
+          const themeMenu = document.getElementById("theme-dropdown-menu");
+          if (themeMenu) themeMenu.classList.add("hidden");
+          return;
+        }
+
+        // Alt + T to toggle Theme menu
+        if (e.altKey && (e.key === "t" || e.key === "T")) {
+          e.preventDefault();
+          toggleThemeDropdown();
+          return;
+        }
+
+        if (isTyping) return;
+
+        // Number shortcuts: 1 through 9, and 0
+        const tabKeys = {
+          "1": "start",
+          "2": "studio",
+          "3": "figures",
+          "4": "excel",
+          "5": "search",
+          "6": "audit",
+          "7": "explorer",
+          "8": "detector",
+          "9": "grounded",
+          "0": "jev"
+        };
+
+        if (tabKeys[e.key]) {
+          switchTab(tabKeys[e.key]);
+        }
+      });
+
+      // Close theme menu on outside click
+      document.addEventListener("click", (e) => {
+        const container = document.getElementById("theme-selector-container");
+        const menu = document.getElementById("theme-dropdown-menu");
+        if (container && menu && !container.contains(e.target)) {
+          menu.classList.add("hidden");
+        }
+      });
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // STUDIO PRODUCTIVITY HELPERS (LIGHTBOX, FONT SIZE, COPY)
+    // ══════════════════════════════════════════════════════════════
+    let currentEditorFontSize = 12;
+
+    function adjustEditorFontSize(delta) {
+      currentEditorFontSize = Math.min(20, Math.max(10, currentEditorFontSize + delta));
+      const textarea = document.getElementById("manuscript-editor-textarea");
+      if (textarea) textarea.style.fontSize = `${currentEditorFontSize}px`;
+      showToast(`Editor font size: ${currentEditorFontSize}px`, "info", 1500);
+    }
+
+    async function copyManuscriptMarkdown() {
+      const textarea = document.getElementById("manuscript-editor-textarea");
+      if (!textarea || !textarea.value) {
+        showToast("No manuscript text to copy", "warning");
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(textarea.value);
+        const btn = document.getElementById("btn-copy-manuscript");
+        if (btn) {
+          const original = btn.innerHTML;
+          btn.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> <span>COPIED!</span>`;
+          setTimeout(() => btn.innerHTML = original, 2000);
+        }
+        showToast("Full manuscript markdown copied to clipboard!", "success");
+      } catch (e) {
+        showToast("Copy failed: " + e.message, "error");
+      }
+    }
+
+    function toggleManuscriptFullscreen() {
+      const view = document.getElementById("view-studio");
+      if (!view) return;
+      if (!document.fullscreenElement) {
+        view.requestFullscreen().catch(() => {});
+        showToast("Fullscreen mode enabled (Press ESC to exit)", "info", 2000);
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    function openFigureLightbox(imgSrc, title, caption, svgUrl, pngUrl) {
+      const modal = document.getElementById("modal-figure-lightbox");
+      if (!modal) return;
+      document.getElementById("lightbox-fig-img").src = imgSrc;
+      document.getElementById("lightbox-fig-title").innerText = title || "Scientific Figure Inspection";
+      document.getElementById("lightbox-fig-caption").innerText = caption || "Publication-grade 300 DPI vector graphic";
+      const dlSvg = document.getElementById("lightbox-dl-svg");
+      if (dlSvg) dlSvg.href = svgUrl || imgSrc;
+      const dlPng = document.getElementById("lightbox-dl-png");
+      if (dlPng) dlPng.href = pngUrl || imgSrc;
+      modal.classList.remove("hidden");
+    }
+
+    function closeFigureLightbox() {
+      const modal = document.getElementById("modal-figure-lightbox");
+      if (modal) modal.classList.add("hidden");
     }
 
     // ── 1. MANUSCRIPT STUDIO & DUAL-PANE PDF REVIEWER ──

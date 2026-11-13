@@ -7,6 +7,11 @@ from pathlib import Path
 root_dir = Path(__file__).resolve().parent
 sys.path.insert(0, str(root_dir))
 
+# Configure Matplotlib config dir to prevent permission issues
+mpl_dir = root_dir / "config" / "matplotlib"
+mpl_dir.mkdir(parents=True, exist_ok=True)
+os.environ.setdefault("MPLCONFIGDIR", str(mpl_dir))
+
 # Automatically load local .env credentials
 try:
     from dotenv import load_dotenv
